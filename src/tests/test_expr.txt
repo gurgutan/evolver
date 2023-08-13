@@ -1,0 +1,4 @@
+input = @16;
+c = { { @16->relu+@16->sigmoid}^2} % 4 -> @4;
+d = {{@64 -> relu}^4} % 2;
+output = input -> d -> c -> @4 -> softmax;

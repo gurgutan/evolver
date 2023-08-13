@@ -1,0 +1,6 @@
+ply
+torch
+torchvision
+torchaudio
+torchview
+graphviz
