@@ -6,6 +6,236 @@ import copy
 import torch.nn as nn
 import torch
 import torch.nn.functional as F
+from abc import ABC, abstractmethod
+
+
+class Brick(ABC):
+    @abstractmethod
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        pass
+
+    @abstractmethod
+    def split(self):
+        pass
+
+    @abstractmethod
+    def decompose(self):
+        pass
+
+
+class ActivationFunction(Brick):
+    @abstractmethod
+    def activate(self):
+        pass
+
+
+class ReluFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return F.relu(x)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "relu"
+
+
+class SigmoidFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return torch.sigmoid(x)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "sigmoid"
+
+
+class TanhFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return torch.tanh(x)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "tanh"
+
+
+class LeakyReluFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return F.leaky_relu(x)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "leaky_relu"
+
+
+class EluFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return F.elu(x)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "elu"
+
+
+class SeluFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return F.selu(x)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self)
+        right = copy.deepcopy(self).to(self)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "selu"
+
+
+class SoftplusFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return F.softplus(x)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "softplus"
+
+
+class SoftmaxFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return F.softmax(x, dim=1)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "softmax"
+
+
+class LogSoftmaxFunction(ActivationFunction):
+    def __init__(self, device: str = "cpu"):
+        super().__init__()
+        self.device = device
+        self.to(self.device)
+
+    def activate(self, x: torch.Tensor) -> torch.Tensor:
+        return F.log_softmax(x, dim=1)
+
+    def split(self):
+        """Возвращает две копии модуля self: left, right"""
+        left = copy.deepcopy(self).to(self.device)
+        right = copy.deepcopy(self).to(self.device)
+        return left, right
+
+    def decompose(self):
+        """Возвращает две функции того же типа"""
+        return self.split()
+
+    def __name__(self):
+        return "log_softmax"
+
+# TODO Переделать Activator так, чтобы использовались классы функций выше
 
 
 class Activator(nn.Module):
@@ -67,6 +297,14 @@ class Activator(nn.Module):
 
 class Adder(nn.Module):
     def __init__(self, left: nn.Module, right: nn.Module, device: str = "cpu"):
+        """
+        Initializes a new instance of the class. Output shapes of left and right must be equal
+        
+        Args:
+            left (nn.Module): The left module.
+            right (nn.Module): The right module.
+            device (str, optional): The device to use. Defaults to "cpu".
+        """
         super().__init__()
         # assert left.shape == right.shape, f"Shapes must be equal, but got {left.shape} and {right.shape}"
         self.left = left

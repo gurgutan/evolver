@@ -69,8 +69,8 @@
 #########################################################################
 
 from ply import yacc
-from src.generator.lexer import Lexer
-from src.generator.bricks import Activator, Adder, Composer, Connector, Identical, Linear, Multiplicator, Namer, Splitter
+from generator.lexer import Lexer
+from generator.bricks import Activator, Adder, Composer, Connector, Identical, Linear, Multiplicator, Namer, Splitter
 import torch.nn.functional as F
 import torch.nn as nn
 import torch
@@ -267,7 +267,7 @@ class Parser:
             p[0] = p[1] + [int(p[3])]
 
     # Функции
-    def p_func_relu(self, p):
+    def p_func_activator(self, p):
         '''expression : RELU
                       | SIGMOID
                       | TANH

@@ -15,5 +15,5 @@ clean:
     rm -rf __pycache__
     rm -rf $(VENV)
 
-    # export PYTHONPATH="${PYTHONPATH}:~/dev/evolver/src"
+    # export PYTHONPATH="${PYTHONPATH}:~/dev/projects/evolver/src"
 

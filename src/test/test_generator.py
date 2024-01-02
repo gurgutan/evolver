@@ -25,19 +25,21 @@ class TestParser(unittest.TestCase):
         }
 
         # Подготовим данные и запишем в json-файл
-        self.json_filename = 'src/tests/test_expr.json'
+        self.json_filename = 'src/test/test_expr.json'
         with open(self.json_filename, 'w') as f:
             json.dump(self.dict_expr1, f)
 
         # Подготовим данные и запишем в txt-файл
-        self.txt_filename = 'src/tests/test_expr.txt'
+        self.txt_filename = 'src/test/test_expr.txt'
         with open(self.txt_filename, 'w') as f:
             f.write(self.expressions[0])
 
         return super().setUp()
 
     def test_from_str(self):
-        modules = self.p.from_str("output={@4->relu};")
+        s = "output={@4->relu};"
+        modules = self.p.from_str(s)
+        print(f"Загрузка моделей из {s}")
         self.assertTrue('output' in modules)
         self.assertEqual(str(modules['output']), '{linear(4)->relu}')
         self.assertEqual(str(modules['output'].left), 'linear(4)')
@@ -50,6 +52,7 @@ class TestParser(unittest.TestCase):
     def test_from_json(self):
         # Теперь проверим загрузку из файла
         modules = self.p.from_json(self.json_filename)
+        print(f"Загрузка моделей из {self.json_filename}")
         self.assertTrue('input' in modules)
         self.assertTrue('c' in modules)
         self.assertTrue('d' in modules)
@@ -58,6 +61,7 @@ class TestParser(unittest.TestCase):
     def test_from_txt(self):
         # Проверим загрузку из txt файла
         modules = self.p.from_txt(self.txt_filename)
+        print(f"Загрузка моделей из {self.txt_filename}")
         self.assertTrue('input' in modules)
         self.assertTrue('output' in modules)
 
