@@ -4,3 +4,4 @@ torchvision
 torchaudio
 torchview
 graphviz
+streamlit
