@@ -362,8 +362,8 @@ class Composer(nn.Module):
     def __name__(self):
         return "composer"
 
-    def __repr__(self):
-        return "{" + f"{self.left.__repr__()}->{self.right.__repr__()}" + "}"
+    # def __repr__(self):
+    #     return "{" + f"{self.left.__repr__()}->{self.right.__repr__()}" + "}"
 
     def expr_str(self, expand=True):
         return "{" + f"{self.left.expr_str(expand)}->{self.right.expr_str(expand)}" + "}"
@@ -392,8 +392,8 @@ class Connector(nn.Module):
     def __name__(self):
         return "connector"
 
-    def __repr__(self):
-        return "{" + f"{self.left.__repr__()}+{self.right.__repr__()}" + "}"
+    # def __repr__(self):
+    #     return "{" + f"{self.left.__repr__()}+{self.right.__repr__()}" + "}"
 
     def expr_str(self, expand=True):
         return "{" + f"{self.left.expr_str(expand)}+{self.right.expr_str(expand)}" + "}"
@@ -408,8 +408,8 @@ class Identical(nn.Module):
     def __name__(self):
         return "id"
 
-    def __repr__(self):
-        return f"id()"
+    # def __repr__(self):
+    #     return f"id()"
 
     def forward(self, x) -> torch.Tensor:
         return x
@@ -446,8 +446,8 @@ class Linear(nn.Module):
     def __name__(self):
         return "linear"
 
-    def __repr__(self):
-        return f"linear({self.linear.out_features})"
+    # def __repr__(self):
+    #     return f"linear({self.linear.out_features})"
 
     def decompose(self):
         """
@@ -506,8 +506,8 @@ class Multiplicator(nn.Module):
     def __name__(self):
         return "multiplicator"
 
-    def __repr__(self):
-        return f"{self.layers[0].__repr__()}^{self.pow}"
+    # def __repr__(self):
+    #     return f"{self.layers[0].__repr__()}^{self.pow}"
 
     def expr_str(self, expand=True):
         return f"{self.layers[0].expr_str(expand)}^{self.pow}"
@@ -544,8 +544,8 @@ class Splitter(nn.Module):
     def __name__(self):
         return "splitter"
 
-    def __repr__(self):
-        return f"{self.layers[0].__repr__()}%{self.split}"
+    # def __repr__(self):
+    #     return f"{self.layers[0].__repr__()}%{self.split}"
 
     def expr_str(self, expand=True):
         return f"{self.layers[0].expr_str(expand)}%{self.split}"

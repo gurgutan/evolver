@@ -1,6 +1,7 @@
 ply
 torch
 torchvision
+torchviz
 torchaudio
 torchview
 graphviz

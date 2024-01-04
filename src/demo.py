@@ -6,7 +6,9 @@ import generator.bricks as bricks
 import sys
 import time
 import torch.nn.functional as F
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
+from torchviz import make_dot
+
 
 help_text = """
 Синтаксис скрипта для создания модели:
@@ -77,22 +79,23 @@ def module_params(model: torch.nn.Module) -> int:
     return params_count
 
 
-def generate_image(model: torch.nn.Module):
+def generate_graph(model: torch.nn.Module):
     # Создаём изображение и объект для рисования
     device = ("cuda" if torch.cuda.is_available() else "cpu")
     # Тестовой тензор
     shape = (1, 8)
-    x = torch.rand(shape).float().to(device)
+    x = torch.rand(shape, requires_grad=False).float().to(device)
     y = model.to(device)(x)
     pic_path = './pic/'
     image_name = 'test'
+    # model_graph = make_dot(y, params=dict(list(model.named_parameters()))).render(pic_path + image_name, format="png")
     model_graph = draw_graph(
         model,
         input_data=x,
         # input_size=shape,
         graph_name='test',
         graph_dir='LR',
-        depth=8,
+        depth=4,
         hide_inner_tensors=True,
         hide_module_functions=True,
         save_graph=True,
@@ -101,8 +104,9 @@ def generate_image(model: torch.nn.Module):
         filename=image_name,
         directory=pic_path
     )
-    image = Image.open(pic_path + image_name + '.png')
-    return image
+    
+    # image = Image.open(pic_path + image_name + '.png')
+    return model_graph.visual_graph
 
 # Задаём заголовок приложения
 st.title("Нейросеть по описанию")
@@ -122,8 +126,10 @@ if text:
     st.write("Модель")
     modules = generate_model(text)
     model = modules['output']
-    image = generate_image(model)
+    graph = generate_graph(model)
     params_count = module_params(model)
-    st.image(image)
-    st.write(f"Модель: {modules}\n\nПараметров: {params_count}")
+    st.graphviz_chart(graph)
+    # st.image(image)
+    st.text(f"Модель: {model.expr_str()}\nПараметров: {params_count}")
+    st.text(f"Описание:\n{model}")
     

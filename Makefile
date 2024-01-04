@@ -2,8 +2,11 @@ VENV = venv
 PYTHON = $(VENV)/bin/python3
 PIP = $(VENV)/bin/pip
 
-# run: $(VENV)/bin/activate    
-#     $(PYTHON) app.py
+build:
+    apt install graphviz
+
+run: $(VENV)/bin/activate    
+    $(PYTHON) demo.py
 
 
 # $(VENV)/bin/activate: requirements.txt
