@@ -6,26 +6,27 @@
 
 import ply.lex as lex
 import ply.yacc as yacc
- 
-class Lexer():
+
+
+class Lexer:
     def __init__(self, **kwargs):
         self.lexer = lex.lex(module=self, **kwargs)
- 
+
     def __del__(self):
         pass
 
     # Зарезервиврованные слова
     reserved_funcid = {
-        'relu':         'RELU',
-        'sigmoid':      'SIGMOID',
-        'tanh':         'TANH',
-        'softmax':      'SOFTMAX',
-        'leaky_relu':   'LEAKY_RELU',
-        'elu':          'ELU',
-        'selu':         'SELU',
-        'softplus':     'SOFTPLUS',
-        'log_softmax':  'LOG_SOFTMAX',
-        'linear':       'LINEAR',
+        "relu": "RELU",
+        "sigmoid": "SIGMOID",
+        "tanh": "TANH",
+        "softmax": "SOFTMAX",
+        "leaky_relu": "LEAKY_RELU",
+        "elu": "ELU",
+        "selu": "SELU",
+        "softplus": "SOFTPLUS",
+        "log_softmax": "LOG_SOFTMAX",
+        "linear": "LINEAR",
         # TODO определения других функций стандартных блоков НС
         #'conv1d': 'CONV1D',
         #'conv2d': 'CONV2D',
@@ -49,59 +50,59 @@ class Lexer():
         #'gru': 'GRU',
         #'rnn': 'RNN'
     }
- 
+
     # list of TOKENS
     tokens = [
-        'COMMA',
-        'FEATURES',
-        'NUMBER',
-        'ID',
-        'FUNCID',
-        'PLUS',
-        'STAR',
-        'MUL',
-        'PERCENT',
-        'LPAREN',
-        'RPAREN',
-        'LCBRACE',
-        'RCBRACE',
-        'EQUALS',
-        'POWER',
-        'SEMICOLON',
-        'COMMENT'
+        "COMMA",
+        "FEATURES",
+        "NUMBER",
+        "ID",
+        "FUNCID",
+        "PLUS",
+        "STAR",
+        "RARROW",
+        "PERCENT",
+        "LPAREN",
+        "RPAREN",
+        "LCBRACE",
+        "RCBRACE",
+        "EQUALS",
+        "POWER",
+        "SEMICOLON",
+        "COMMENT",
     ] + list(reserved_funcid.values())
-    
-    t_COMMA = r'\,'
-    t_PLUS = r'\+'
-    t_STAR = r'\*'
-    t_MUL = r'\-\>'
-    t_PERCENT = r'\%'
-    t_LPAREN = r'\('
-    t_RPAREN = r'\)'
-    t_LCBRACE = r'\{'
-    t_RCBRACE = r'\}'
-    t_EQUALS = r'='
-    t_SEMICOLON = r'\;'
-    t_POWER = r'\^'
-    t_ignore = ' \t'
- 
+
+    t_COMMA = r"\,"
+    t_PLUS = r"\+"
+    t_STAR = r"\*"
+    t_RARROW = r"\-\>"
+    t_PERCENT = r"\%"
+    t_LPAREN = r"\("
+    t_RPAREN = r"\)"
+    t_LCBRACE = r"\{"
+    t_RCBRACE = r"\}"
+    t_EQUALS = r"="
+    t_SEMICOLON = r"\;"
+    t_POWER = r"\^"
+    t_ignore = " \t"
+
     def t_newline(self, t):
-        r'\n+'
+        r"\n+"
         t.lexer.lineno += len(t.value)
 
     def t_FEATURES(self, t):
-        r'\@\d+'
+        r"\@\d+"
         t.value = int(t.value[1:])
         return t
 
     def t_NUMBER(self, t):
-        r'\d+'
+        r"\d+"
         t.value = int(t.value)
         return t
 
     def t_ID(self, t):
-        r'[a-zA-Z_][a-zA-Z0-9_]*'
-        t.type = self.reserved_funcid.get(t.value,'ID')
+        r"[a-zA-Z_][a-zA-Z0-9_]*"
+        t.type = self.reserved_funcid.get(t.value, "ID")
         return t
 
     # def t_FUNCID(self, t):
@@ -114,9 +115,8 @@ class Lexer():
         t.lexer.skip(1)
 
     def t_COMMENT(self, t):
-        r'\#.*'
+        r"\#.*"
         pass
- 
+
     def t_nl(self, t):
-        r'(\n|\r|\r\n)|\s|\t'
- 
+        r"(\n|\r|\r\n)|\s|\t"

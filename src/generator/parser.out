@@ -15,7 +15,7 @@ Rule 4     definition -> ID EQUALS expression SEMICOLON
 Rule 5     expression -> FEATURES
 Rule 6     expression -> ID
 Rule 7     expression -> expression PLUS expression
-Rule 8     expression -> expression MUL expression
+Rule 8     expression -> expression RARROW expression
 Rule 9     expression -> expression POWER NUMBER
 Rule 10    expression -> expression PERCENT NUMBER
 Rule 11    expression -> LCBRACE expression RCBRACE
@@ -48,11 +48,11 @@ LEAKY_RELU           : 20
 LINEAR               : 25
 LOG_SOFTMAX          : 24
 LPAREN               : 12 13
-MUL                  : 8
 NUMBER               : 9 10 14 15
 PERCENT              : 10
 PLUS                 : 7
 POWER                : 9
+RARROW               : 8
 RCBRACE              : 11
 RELU                 : 16
 RPAREN               : 12 13
@@ -136,7 +136,7 @@ state 6
     (5) expression -> . FEATURES
     (6) expression -> . ID
     (7) expression -> . expression PLUS expression
-    (8) expression -> . expression MUL expression
+    (8) expression -> . expression RARROW expression
     (9) expression -> . expression POWER NUMBER
     (10) expression -> . expression PERCENT NUMBER
     (11) expression -> . LCBRACE expression RCBRACE
@@ -173,7 +173,7 @@ state 7
 
     SEMICOLON       reduce using rule 6 (expression -> ID .)
     PLUS            reduce using rule 6 (expression -> ID .)
-    MUL             reduce using rule 6 (expression -> ID .)
+    RARROW          reduce using rule 6 (expression -> ID .)
     POWER           reduce using rule 6 (expression -> ID .)
     PERCENT         reduce using rule 6 (expression -> ID .)
     RCBRACE         reduce using rule 6 (expression -> ID .)
@@ -183,13 +183,13 @@ state 8
 
     (4) definition -> ID EQUALS expression . SEMICOLON
     (7) expression -> expression . PLUS expression
-    (8) expression -> expression . MUL expression
+    (8) expression -> expression . RARROW expression
     (9) expression -> expression . POWER NUMBER
     (10) expression -> expression . PERCENT NUMBER
 
     SEMICOLON       shift and go to state 21
     PLUS            shift and go to state 22
-    MUL             shift and go to state 23
+    RARROW          shift and go to state 23
     POWER           shift and go to state 24
     PERCENT         shift and go to state 25
 
@@ -200,7 +200,7 @@ state 9
 
     SEMICOLON       reduce using rule 5 (expression -> FEATURES .)
     PLUS            reduce using rule 5 (expression -> FEATURES .)
-    MUL             reduce using rule 5 (expression -> FEATURES .)
+    RARROW          reduce using rule 5 (expression -> FEATURES .)
     POWER           reduce using rule 5 (expression -> FEATURES .)
     PERCENT         reduce using rule 5 (expression -> FEATURES .)
     RCBRACE         reduce using rule 5 (expression -> FEATURES .)
@@ -212,7 +212,7 @@ state 10
     (5) expression -> . FEATURES
     (6) expression -> . ID
     (7) expression -> . expression PLUS expression
-    (8) expression -> . expression MUL expression
+    (8) expression -> . expression RARROW expression
     (9) expression -> . expression POWER NUMBER
     (10) expression -> . expression PERCENT NUMBER
     (11) expression -> . LCBRACE expression RCBRACE
@@ -249,7 +249,7 @@ state 11
 
     SEMICOLON       reduce using rule 16 (expression -> RELU .)
     PLUS            reduce using rule 16 (expression -> RELU .)
-    MUL             reduce using rule 16 (expression -> RELU .)
+    RARROW          reduce using rule 16 (expression -> RELU .)
     POWER           reduce using rule 16 (expression -> RELU .)
     PERCENT         reduce using rule 16 (expression -> RELU .)
     RCBRACE         reduce using rule 16 (expression -> RELU .)
@@ -261,7 +261,7 @@ state 12
 
     SEMICOLON       reduce using rule 17 (expression -> SIGMOID .)
     PLUS            reduce using rule 17 (expression -> SIGMOID .)
-    MUL             reduce using rule 17 (expression -> SIGMOID .)
+    RARROW          reduce using rule 17 (expression -> SIGMOID .)
     POWER           reduce using rule 17 (expression -> SIGMOID .)
     PERCENT         reduce using rule 17 (expression -> SIGMOID .)
     RCBRACE         reduce using rule 17 (expression -> SIGMOID .)
@@ -273,7 +273,7 @@ state 13
 
     SEMICOLON       reduce using rule 18 (expression -> TANH .)
     PLUS            reduce using rule 18 (expression -> TANH .)
-    MUL             reduce using rule 18 (expression -> TANH .)
+    RARROW          reduce using rule 18 (expression -> TANH .)
     POWER           reduce using rule 18 (expression -> TANH .)
     PERCENT         reduce using rule 18 (expression -> TANH .)
     RCBRACE         reduce using rule 18 (expression -> TANH .)
@@ -285,7 +285,7 @@ state 14
 
     SEMICOLON       reduce using rule 19 (expression -> SOFTMAX .)
     PLUS            reduce using rule 19 (expression -> SOFTMAX .)
-    MUL             reduce using rule 19 (expression -> SOFTMAX .)
+    RARROW          reduce using rule 19 (expression -> SOFTMAX .)
     POWER           reduce using rule 19 (expression -> SOFTMAX .)
     PERCENT         reduce using rule 19 (expression -> SOFTMAX .)
     RCBRACE         reduce using rule 19 (expression -> SOFTMAX .)
@@ -297,7 +297,7 @@ state 15
 
     SEMICOLON       reduce using rule 20 (expression -> LEAKY_RELU .)
     PLUS            reduce using rule 20 (expression -> LEAKY_RELU .)
-    MUL             reduce using rule 20 (expression -> LEAKY_RELU .)
+    RARROW          reduce using rule 20 (expression -> LEAKY_RELU .)
     POWER           reduce using rule 20 (expression -> LEAKY_RELU .)
     PERCENT         reduce using rule 20 (expression -> LEAKY_RELU .)
     RCBRACE         reduce using rule 20 (expression -> LEAKY_RELU .)
@@ -309,7 +309,7 @@ state 16
 
     SEMICOLON       reduce using rule 21 (expression -> ELU .)
     PLUS            reduce using rule 21 (expression -> ELU .)
-    MUL             reduce using rule 21 (expression -> ELU .)
+    RARROW          reduce using rule 21 (expression -> ELU .)
     POWER           reduce using rule 21 (expression -> ELU .)
     PERCENT         reduce using rule 21 (expression -> ELU .)
     RCBRACE         reduce using rule 21 (expression -> ELU .)
@@ -321,7 +321,7 @@ state 17
 
     SEMICOLON       reduce using rule 22 (expression -> SELU .)
     PLUS            reduce using rule 22 (expression -> SELU .)
-    MUL             reduce using rule 22 (expression -> SELU .)
+    RARROW          reduce using rule 22 (expression -> SELU .)
     POWER           reduce using rule 22 (expression -> SELU .)
     PERCENT         reduce using rule 22 (expression -> SELU .)
     RCBRACE         reduce using rule 22 (expression -> SELU .)
@@ -333,7 +333,7 @@ state 18
 
     SEMICOLON       reduce using rule 23 (expression -> SOFTPLUS .)
     PLUS            reduce using rule 23 (expression -> SOFTPLUS .)
-    MUL             reduce using rule 23 (expression -> SOFTPLUS .)
+    RARROW          reduce using rule 23 (expression -> SOFTPLUS .)
     POWER           reduce using rule 23 (expression -> SOFTPLUS .)
     PERCENT         reduce using rule 23 (expression -> SOFTPLUS .)
     RCBRACE         reduce using rule 23 (expression -> SOFTPLUS .)
@@ -345,7 +345,7 @@ state 19
 
     SEMICOLON       reduce using rule 24 (expression -> LOG_SOFTMAX .)
     PLUS            reduce using rule 24 (expression -> LOG_SOFTMAX .)
-    MUL             reduce using rule 24 (expression -> LOG_SOFTMAX .)
+    RARROW          reduce using rule 24 (expression -> LOG_SOFTMAX .)
     POWER           reduce using rule 24 (expression -> LOG_SOFTMAX .)
     PERCENT         reduce using rule 24 (expression -> LOG_SOFTMAX .)
     RCBRACE         reduce using rule 24 (expression -> LOG_SOFTMAX .)
@@ -375,7 +375,7 @@ state 22
     (5) expression -> . FEATURES
     (6) expression -> . ID
     (7) expression -> . expression PLUS expression
-    (8) expression -> . expression MUL expression
+    (8) expression -> . expression RARROW expression
     (9) expression -> . expression POWER NUMBER
     (10) expression -> . expression PERCENT NUMBER
     (11) expression -> . LCBRACE expression RCBRACE
@@ -408,11 +408,11 @@ state 22
 
 state 23
 
-    (8) expression -> expression MUL . expression
+    (8) expression -> expression RARROW . expression
     (5) expression -> . FEATURES
     (6) expression -> . ID
     (7) expression -> . expression PLUS expression
-    (8) expression -> . expression MUL expression
+    (8) expression -> . expression RARROW expression
     (9) expression -> . expression POWER NUMBER
     (10) expression -> . expression PERCENT NUMBER
     (11) expression -> . LCBRACE expression RCBRACE
@@ -461,13 +461,13 @@ state 26
 
     (11) expression -> LCBRACE expression . RCBRACE
     (7) expression -> expression . PLUS expression
-    (8) expression -> expression . MUL expression
+    (8) expression -> expression . RARROW expression
     (9) expression -> expression . POWER NUMBER
     (10) expression -> expression . PERCENT NUMBER
 
     RCBRACE         shift and go to state 33
     PLUS            shift and go to state 22
-    MUL             shift and go to state 23
+    RARROW          shift and go to state 23
     POWER           shift and go to state 24
     PERCENT         shift and go to state 25
 
@@ -478,7 +478,7 @@ state 27
 
     SEMICOLON       reduce using rule 25 (expression -> LINEAR params .)
     PLUS            reduce using rule 25 (expression -> LINEAR params .)
-    MUL             reduce using rule 25 (expression -> LINEAR params .)
+    RARROW          reduce using rule 25 (expression -> LINEAR params .)
     POWER           reduce using rule 25 (expression -> LINEAR params .)
     PERCENT         reduce using rule 25 (expression -> LINEAR params .)
     RCBRACE         reduce using rule 25 (expression -> LINEAR params .)
@@ -500,18 +500,18 @@ state 29
 
     (7) expression -> expression PLUS expression .
     (7) expression -> expression . PLUS expression
-    (8) expression -> expression . MUL expression
+    (8) expression -> expression . RARROW expression
     (9) expression -> expression . POWER NUMBER
     (10) expression -> expression . PERCENT NUMBER
 
     SEMICOLON       reduce using rule 7 (expression -> expression PLUS expression .)
     PLUS            reduce using rule 7 (expression -> expression PLUS expression .)
     RCBRACE         reduce using rule 7 (expression -> expression PLUS expression .)
-    MUL             shift and go to state 23
+    RARROW          shift and go to state 23
     POWER           shift and go to state 24
     PERCENT         shift and go to state 25
 
-  ! MUL             [ reduce using rule 7 (expression -> expression PLUS expression .) ]
+  ! RARROW          [ reduce using rule 7 (expression -> expression PLUS expression .) ]
   ! POWER           [ reduce using rule 7 (expression -> expression PLUS expression .) ]
   ! PERCENT         [ reduce using rule 7 (expression -> expression PLUS expression .) ]
   ! PLUS            [ shift and go to state 22 ]
@@ -519,23 +519,23 @@ state 29
 
 state 30
 
-    (8) expression -> expression MUL expression .
+    (8) expression -> expression RARROW expression .
     (7) expression -> expression . PLUS expression
-    (8) expression -> expression . MUL expression
+    (8) expression -> expression . RARROW expression
     (9) expression -> expression . POWER NUMBER
     (10) expression -> expression . PERCENT NUMBER
 
-    SEMICOLON       reduce using rule 8 (expression -> expression MUL expression .)
-    PLUS            reduce using rule 8 (expression -> expression MUL expression .)
-    MUL             reduce using rule 8 (expression -> expression MUL expression .)
-    RCBRACE         reduce using rule 8 (expression -> expression MUL expression .)
+    SEMICOLON       reduce using rule 8 (expression -> expression RARROW expression .)
+    PLUS            reduce using rule 8 (expression -> expression RARROW expression .)
+    RARROW          reduce using rule 8 (expression -> expression RARROW expression .)
+    RCBRACE         reduce using rule 8 (expression -> expression RARROW expression .)
     POWER           shift and go to state 24
     PERCENT         shift and go to state 25
 
-  ! POWER           [ reduce using rule 8 (expression -> expression MUL expression .) ]
-  ! PERCENT         [ reduce using rule 8 (expression -> expression MUL expression .) ]
+  ! POWER           [ reduce using rule 8 (expression -> expression RARROW expression .) ]
+  ! PERCENT         [ reduce using rule 8 (expression -> expression RARROW expression .) ]
   ! PLUS            [ shift and go to state 22 ]
-  ! MUL             [ shift and go to state 23 ]
+  ! RARROW          [ shift and go to state 23 ]
 
 
 state 31
@@ -544,7 +544,7 @@ state 31
 
     SEMICOLON       reduce using rule 9 (expression -> expression POWER NUMBER .)
     PLUS            reduce using rule 9 (expression -> expression POWER NUMBER .)
-    MUL             reduce using rule 9 (expression -> expression POWER NUMBER .)
+    RARROW          reduce using rule 9 (expression -> expression POWER NUMBER .)
     POWER           reduce using rule 9 (expression -> expression POWER NUMBER .)
     PERCENT         reduce using rule 9 (expression -> expression POWER NUMBER .)
     RCBRACE         reduce using rule 9 (expression -> expression POWER NUMBER .)
@@ -556,7 +556,7 @@ state 32
 
     SEMICOLON       reduce using rule 10 (expression -> expression PERCENT NUMBER .)
     PLUS            reduce using rule 10 (expression -> expression PERCENT NUMBER .)
-    MUL             reduce using rule 10 (expression -> expression PERCENT NUMBER .)
+    RARROW          reduce using rule 10 (expression -> expression PERCENT NUMBER .)
     POWER           reduce using rule 10 (expression -> expression PERCENT NUMBER .)
     PERCENT         reduce using rule 10 (expression -> expression PERCENT NUMBER .)
     RCBRACE         reduce using rule 10 (expression -> expression PERCENT NUMBER .)
@@ -568,7 +568,7 @@ state 33
 
     SEMICOLON       reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
     PLUS            reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
-    MUL             reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
+    RARROW          reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
     POWER           reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
     PERCENT         reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
     RCBRACE         reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
@@ -589,7 +589,7 @@ state 35
 
     SEMICOLON       reduce using rule 13 (params -> LPAREN RPAREN .)
     PLUS            reduce using rule 13 (params -> LPAREN RPAREN .)
-    MUL             reduce using rule 13 (params -> LPAREN RPAREN .)
+    RARROW          reduce using rule 13 (params -> LPAREN RPAREN .)
     POWER           reduce using rule 13 (params -> LPAREN RPAREN .)
     PERCENT         reduce using rule 13 (params -> LPAREN RPAREN .)
     RCBRACE         reduce using rule 13 (params -> LPAREN RPAREN .)
@@ -609,7 +609,7 @@ state 37
 
     SEMICOLON       reduce using rule 12 (params -> LPAREN param_list RPAREN .)
     PLUS            reduce using rule 12 (params -> LPAREN param_list RPAREN .)
-    MUL             reduce using rule 12 (params -> LPAREN param_list RPAREN .)
+    RARROW          reduce using rule 12 (params -> LPAREN param_list RPAREN .)
     POWER           reduce using rule 12 (params -> LPAREN param_list RPAREN .)
     PERCENT         reduce using rule 12 (params -> LPAREN param_list RPAREN .)
     RCBRACE         reduce using rule 12 (params -> LPAREN param_list RPAREN .)

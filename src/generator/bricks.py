@@ -235,8 +235,6 @@ class LogSoftmaxFunction(ActivationFunction):
     def __name__(self):
         return "log_softmax"
 
-# TODO Переделать Activator так, чтобы использовались классы функций выше
-
 
 class Activator(nn.Module):
     def __init__(self, func_name: str, device: str = "cpu"):
@@ -251,13 +249,10 @@ class Activator(nn.Module):
             "selu": F.selu,
             "softplus": F.softplus,
         }
-        functions_dim = {
-            "softmax": F.softmax,
-            "log_softmax": F.log_softmax
-        }
-        if (self.func_name in functions):
+        functions_dim = {"softmax": F.softmax, "log_softmax": F.log_softmax}
+        if self.func_name in functions:
             self.f = functions[self.func_name]
-        elif (self.func_name in functions_dim):
+        elif self.func_name in functions_dim:
             self.f = functions_dim[self.func_name]
         else:
             raise ValueError(f"Unknown function {self.func_name}")
@@ -267,8 +262,8 @@ class Activator(nn.Module):
 
     # Допустимые функции:
     # relu, sigmoid, tanh, softmax, leaky_relu, elu, selu, softplus, log_softmax, linear
-    def forward(self, x) -> torch.Tensor:
-        if (self.has_dim):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if self.has_dim:
             return self.f(x, dim=1)
         else:
             return self.f(x)
@@ -299,7 +294,7 @@ class Adder(nn.Module):
     def __init__(self, left: nn.Module, right: nn.Module, device: str = "cpu"):
         """
         Initializes a new instance of the class. Output shapes of left and right must be equal
-        
+
         Args:
             left (nn.Module): The left module.
             right (nn.Module): The right module.
@@ -314,7 +309,7 @@ class Adder(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         y = [self.left(x), self.right(x)]
-        return torch.stack(y, dim=1).sum(dim=1)*0.5
+        return torch.stack(y, dim=1).sum(dim=1) * 0.5
 
     def split(self):
         """
@@ -366,7 +361,9 @@ class Composer(nn.Module):
     #     return "{" + f"{self.left.__repr__()}->{self.right.__repr__()}" + "}"
 
     def expr_str(self, expand=True):
-        return "{" + f"{self.left.expr_str(expand)}->{self.right.expr_str(expand)}" + "}"
+        return (
+            "{" + f"{self.left.expr_str(expand)}->{self.right.expr_str(expand)}" + "}"
+        )
 
 
 class Connector(nn.Module):
@@ -411,7 +408,7 @@ class Identical(nn.Module):
     # def __repr__(self):
     #     return f"id()"
 
-    def forward(self, x) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return x
 
     def split(self):
@@ -431,9 +428,25 @@ class Identical(nn.Module):
 
 
 class Linear(nn.Module):
-    def __init__(self, out_features: int, weights: torch.Tensor = None, biases: torch.Tensor = None, device: str = "cpu"):
+    """
+    A linear layer that applies a linear transformation to the input data.
+
+    Args:
+        out_features (int): The number of output features.
+        weights (torch.Tensor, optional): The weights of the linear layer. Defaults to None.
+        biases (torch.Tensor, optional): The biases of the linear layer. Defaults to None.
+        device (str, optional): The device to use. Defaults to "cpu".
+    """
+
+    def __init__(
+        self,
+        out_features: int,
+        weights: torch.Tensor = None,
+        biases: torch.Tensor = None,
+        device: str = "cpu",
+    ):
         super().__init__()
-        if (weights is None or biases is None):
+        if weights is None or biases is None:
             self.linear = nn.LazyLinear(out_features)
         else:
             self.linear = nn.Linear(weights.shape[1], weights.shape[0])
@@ -474,7 +487,7 @@ class Linear(nn.Module):
         right = copy.deepcopy(self).to(self.device)
         return left, right
 
-    def forward(self, x) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.linear(x)
 
     def expr_str(self, expand=True):
@@ -515,19 +528,20 @@ class Multiplicator(nn.Module):
 
 class Splitter(nn.Module):
     """
-    Соединяет параллельно split копий модуля brick    
+    Соединяет параллельно split копий модуля brick
     """
 
-    def __init__(self, brick: nn.Module, split: int, save_shape: bool = True, device: str = "cpu"):
+    def __init__(
+        self, brick: nn.Module, split: int, save_shape: bool = True, device: str = "cpu"
+    ):
         super().__init__()
-        '''
+        """
         Соединяет параллельно split копий модуля module
         save_shape - если True, то применяется сумма тензоров по dim=1, иначе конкатенация
-        '''
+        """
         super().__init__()
         assert split > 0, "split must be positive"
-        self.layers = nn.ModuleList([copy.deepcopy(brick)
-                                    for _ in range(split)])
+        self.layers = nn.ModuleList([copy.deepcopy(brick) for _ in range(split)])
         self.split = split
         self.save_shape = save_shape
         self.device = device
@@ -535,9 +549,9 @@ class Splitter(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         y = [layer(x) for layer in self.layers]
-        if (self.save_shape):
+        if self.save_shape:
             stack = torch.stack(y, dim=1)
-            return stack.sum(dim=1)/self.split
+            return stack.sum(dim=1) / self.split
         else:
             return torch.cat(y, dim=1)
 
@@ -563,7 +577,7 @@ class Namer(nn.Module):
         return self.module(x)
 
     def expr_str(self, expand=True):
-        if (expand):
+        if expand:
             return f"{self.name}={self.module.expr_str(expand)};"
         else:
             return self.name

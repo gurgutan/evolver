@@ -1,4 +1,4 @@
-strict digraph decompose {
+strict digraph decomose {
 	graph [ordering=in rankdir=LR size="12.0,12.0"]
 	node [align=left fontname="Linux libertine" fontsize=10 height=0.2 margin=0 ranksep=0.1 shape=plaintext style=filled]
 	edge [fontsize=10]
