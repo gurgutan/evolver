@@ -497,7 +497,8 @@ class Linear(nn.Module):
 class Multiplicator(nn.Module):
     def __init__(self, module: nn.Module, p: int, device: str = "cpu"):
         super().__init__()
-        assert p > 0, "p must be positive"
+        if not (0 < p < 1025):
+            ValueError("p must be in range [1,1024]")
         self.layers = nn.ModuleList([copy.deepcopy(module) for _ in range(p)])
         self.pow = p
         self.device = device

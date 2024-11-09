@@ -69,24 +69,15 @@
 #   b = {{@8 -> relu + @8 -> relu} ^ 2} % 2 -> @16 -> softmax;
 #########################################################################
 
-from ply import yacc
-from generator.lexer import Lexer
-from generator.bricks import (
-    Activator,
-    Adder,
-    Composer,
-    Connector,
-    Identical,
-    Linear,
-    Multiplicator,
-    Namer,
-    Splitter,
-)
-import torch.nn.functional as F
+from pathlib import Path
+from typing import Dict, Union
 import torch.nn as nn
-import torch
-import sys
 import json
+
+from ply import yacc
+from generator.errors import ParserError
+from generator.grammars import AnnetGrammar
+from generator.lexer import Tokenizer
 from loguru import logger
 
 # TODO Восстановление описания по модулю нужно как то увязать с описаним грамматики
@@ -97,7 +88,7 @@ from loguru import logger
 
 
 # Класс парсера для создания модуля нейросети
-class Parser:
+class Parser(AnnetGrammar):
     """
     A class to parse neural network module definitions from various formats.
 
@@ -105,46 +96,43 @@ class Parser:
     It constructs a representation of neural network modules based on the parsed input.
     """
 
-    def __init__(self, lexer: Lexer = None, verbose: bool = True):
+    OUTPUT_ID = "output"
+    INPUT_ID = "input"
+
+    def __init__(self, lexer: Tokenizer = None, verbose: bool = True):
+        super().__init__(lexer or Tokenizer(), verbose)
         logger.info("Инициализация парсера...")
         self.parser = yacc.yacc(module=self, start="module")
-        self.lexer = lexer if lexer else Lexer()
-        self.reserved_funcid = self.lexer.reserved_funcid
-        self.identifiers = dict()
-        self.result = nn.Module()
+        self.result = None
         self.verbose = verbose
 
-    def from_str(self, s: str) -> dict:
+    def from_str(self, s: str) -> Dict[str, nn.Module]:
         """
-        Parse from a string s. Returns a dictionary with named neural network modules.
-        One of the expressions must have the name output.
+        Parse a string and return a dictionary of named neural network modules.
 
         Args:
             s (str): The input string to parse.
 
         Returns:
-            dict: A dictionary of named modules.
+            Dict[str, nn.Module]: A dictionary of named modules.
+
+        Raises:
+            ParserError: If there's an error during parsing.
 
         Examples:
-            x = @64;        # x - torch.nn.Linear 64 нейрона
+            x = @64;        # x - torch.nn.Linear shape (64,1)
             output = {{@4 -> relu + @8 -> relu} ^ 2} % 2 -> @16 -> softmax;
         """
-        self.identifiers = dict()
-        logger.info("Парсинг скрипта...")
-        self.result = self.parser.parse(s, tracking=True, lexer=self.lexer.lexer)
-        logger.info(
-            f"Парсинг завершен. Получены модули: {list(self.identifiers.keys())}"
-        )
-        if "output" not in self.identifiers:
-            ids = list(self.identifiers.keys())
-            self.notify(
-                "В модуле не определен выходной блок output."
-                f"В качестве output будет использован блок '{ids[-1]}'"
+        self.identifiers.clear()
+        try:
+            self.result = self.parser.parse(
+                s, tracking=True, lexer=self.tokenizer.lexer
             )
-            self.identifiers["output"] = list(self.identifiers.values())[-1]
-        if "input" not in self.identifiers:
-            logger.warning("В модуле не определен входной блок input")
-        return self.identifiers
+            self._check_output()
+            return self.identifiers
+        except ParserError as e:
+            logger.error(str(e))
+            raise
 
     def from_txt(self, filename: str) -> dict:
         """
@@ -157,23 +145,8 @@ class Parser:
         Returns:
             dict: A dictionary of named modules.
         """
-        with open(filename, "r") as f:
-            text = f.read()
+        text = Path(filename).read_text()
         return self.from_str(text)
-
-    def from_json(self, filename: str) -> dict:
-        """
-        Parse from a JSON file filename. Returns a dictionary with named neural network modules.
-
-        Args:
-            filename (str): The path to the JSON file.
-
-        Returns:
-            dict: A dictionary of named modules.
-        """
-        with open(filename, "r") as f:
-            json_dict = json.load(f)
-        return self.from_dict(json_dict)
 
     def from_dict(self, d: dict) -> dict:
         """
@@ -186,172 +159,85 @@ class Parser:
         Returns:
             dict: A dictionary of named modules.
         """
-        s = ""
-        for key in d.keys():
-            s += f"{key} = {d[key].rstrip(';')};\n"
-        return self.from_str(s)
+        s = ";\n".join(f"{key} = {value.rstrip(';')}" for key, value in d.items())
+        return self.from_str(f"{s};")
 
-    # Токены из лексера
-    tokens = Lexer.tokens
+    def from_json(self, filename: str) -> dict:
+        """
+        Parse from a JSON file filename. Returns a dictionary with named neural network modules.
 
-    precedence = (
-        ("left", "PLUS"),
-        ("left", "RARROW"),
-        # ("left", "STAR"),
-        ("left", "PERCENT"),
-        ("right", "POWER"),
-    )
+        Args:
+            filename (str): The path to the JSON file.
 
-    # Базовый элемент описания - модуль
-    def p_module(self, p):
-        """module : COMMENT
-        | definition
-        | module definition"""
-        if len(p) == 2:
-            p[0] = p[1]
+        Returns:
+            dict: A dictionary of named modules.
+        """
+        json_dict = json.loads(Path(filename).read_text())
+        return self.from_dict(json_dict)
+
+    def parse(
+        self, input_data: Union[str, Dict[str, str], Path]
+    ) -> Dict[str, nn.Module]:
+        """
+        Parse input data and return a dictionary of named neural network modules.
+
+        Args:
+            input_data: The input data to parse. Can be a string, dictionary, or file path.
+
+        Returns:
+            Dict[str, nn.Module]: A dictionary of named modules.
+
+        Raises:
+            ParserError: If there's an error during parsing.
+        """
+        validated_input = self._validate_input(input_data)
+        return self.from_str(validated_input)
+
+    def _validate_input(self, input_data: Union[str, Dict[str, str], Path]) -> str:
+        """
+        Validate and prepare input data for parsing.
+
+        Args:
+            input_data: The input data to validate. Can be a string, dictionary, or file path.
+
+        Returns:
+            str: The validated and prepared input string.
+
+        Raises:
+            ParserError: If the input data is invalid or cannot be read.
+        """
+        if isinstance(input_data, str):
+            return input_data
+        elif isinstance(input_data, dict):
+            return self.from_dict(input_data)
+        elif isinstance(input_data, Path):
+            if input_data.suffix == ".json":
+                return self.from_json(input_data)
+            elif input_data.suffix == ".txt":
+                return self._read_file(input_data)
+            else:
+                raise ParserError(f"Unsupported file type: {input_data.suffix}")
         else:
-            p[0] = p[2]
+            raise ParserError(f"Unsupported input type: {type(input_data)}")
 
-    # Присвоение переменной значения выражения
-    def p_definition(self, p):
-        "definition : ID EQUALS expression SEMICOLON"
-        if p[1] in self.reserved_funcid:
-            self.notify(
-                p,
-                f"Нельзя в качестве идентификатора использовать зарезервированые функции: {p[1]}",
+    def _check_output(self):
+        """
+        Check if 'output' and 'input' blocks are defined in the parsed module.
+        If 'output' is not defined, use the last defined block as output.
+        """
+        if not self.identifiers:
+            raise ParserError("No modules were defined during parsing.")
+
+        if Parser.OUTPUT_ID not in self.identifiers:
+            last_id = list(self.identifiers.keys())[-1]
+            logger.warning(f"Output block not defined. Using '{last_id}' as output.")
+            self.identifiers[Parser.OUTPUT_ID] = self.identifiers[last_id]
+
+        if not isinstance(self.identifiers[Parser.OUTPUT_ID], nn.Module):
+            raise ParserError(
+                "The 'output' block is not a valid neural network module, but\n"
+                f"{type(self.identifiers[Parser.OUTPUT_ID])}"
             )
-        self.identifiers[p[1]] = p[3]
-        p[0] = p[3]
 
-    # Число в выражении соответствует линейному модулю с соответствующим количеством нейронов
-    def p_expression_number(self, p):
-        "expression : FEATURES"
-        try:
-            n = int(p[1])
-            if n < 1 or n > 2**20:
-                self.notify(
-                    p, f"Количество нейронов должно быть от 1 до 2^20, а не {n} "
-                )
-            p[0] = Linear(n)
-        except Exception as e:
-            self.notify(p, f"Ошибка при создании Linear: {str(e)}")
-
-    # id модуля
-    def p_expression_id(self, p):
-        "expression : ID"
-        if p[1] in self.reserved_funcid.values():
-            self.notify(
-                f"Идентификатора не должен совпадать с зарезервированой функцией: {p[1]}"
-            )
-        if p[1] in self.identifiers:
-            p[0] = self.identifiers[p[1]]
-        else:
-            self.notify(
-                p,
-                f"Идентификатор {p[1]} не определен и не является допустимым блоком",
-            )
-
-    # Сложение двух выражений
-    def p_expression_add(self, p):
-        "expression : expression PLUS expression"
-        try:
-            p[0] = Adder(p[1], p[3])
-        except Exception as e:
-            self.notify(p, f"Ошибка при создании Adder: {str(e)}")
-
-    # Умножение двух выражений
-    def p_expression_mul(self, p):
-        "expression : expression RARROW expression"
-        try:
-            p[0] = Composer(p[1], p[3])
-        except Exception as e:
-            self.notify(p, f"Ошибка при создании Composer: {str(e)}")
-
-    # Возведение выражения в степень NUMBER
-    def p_expression_power(self, p):
-        "expression : expression POWER NUMBER"
-        try:
-            n = int(p[3])
-            if n < 1 or n > 2**20:
-                self.notify(
-                    p,
-                    f"Число n в выражении 'expr ^ n' должно быть от 1 до 2**20, а не {n}",
-                )
-            p[0] = Multiplicator(p[1], n)
-        except Exception as e:
-            self.notify(p, f"Ошибка при создании Multiplicator: {str(e)}")
-
-    # Разделение выражения на NUMBER частей
-    def p_expression_split(self, p):
-        "expression : expression PERCENT NUMBER"
-        try:
-            n = int(p[3])
-            if n < 1 or n > 2**20:
-                self.notify(
-                    p,
-                    f"Число n в выражении 'expr % n' должно быть от 1 до 2^20, а не {n}",
-                )
-            p[0] = Splitter(p[1], n, save_shape=True)
-        except Exception as e:
-            self.notify(p, f"Ошибка при создании Splitter: {str(e)}")
-
-    def p_expression_parens(self, p):
-        "expression : LCBRACE expression RCBRACE"
-        p[0] = p[2]
-
-    # Парметры функции
-    def p_func_params(self, p):
-        "params : LPAREN param_list RPAREN"
-        p[0] = p[2]
-
-    def p_func_params_empty(self, p):
-        "params : LPAREN RPAREN"
-        p[0] = []
-
-    def p_func_param_list(self, p):
-        """param_list : NUMBER
-        | param_list COMMA NUMBER"""
-        if len(p) == 2:
-            p[0] = [int(p[1])]
-        else:
-            p[0] = p[1] + [int(p[3])]
-
-    # Функции
-    def p_func_activator(self, p):
-        """expression : RELU
-        | SIGMOID
-        | TANH
-        | SOFTMAX
-        | LEAKY_RELU
-        | ELU
-        | SELU
-        | SOFTPLUS
-        | LOG_SOFTMAX"""
-        try:
-            p[0] = Activator(p[1])
-        except Exception as e:
-            self.notify(p, f"Ошибка при создании Activator: {str(e)}")
-
-    def p_func_linear(self, p):
-        "expression : LINEAR params"
-        try:
-            params = p[2]
-            if len(params) == 0 or len(params) > 2:
-                self.notify(
-                    p, f"Функция {p[1]} принимает 1 параметр, а {len(params)} передано"
-                )
-            p[0] = Linear(int(p[2][0]))
-        except Exception as e:
-            self.notify(p, f"Ошибка при создании Linear: {str(e)}")
-
-    def p_error(self, token):
-        if token is not None:
-            self.notify(token, f"Не опознанная ошибка в '{token.value}'")
-        else:
-            self.notify(token, "Неожиданный конец строки")
-
-    def notify(self, token=None, message=""):
-        if token is not None:
-            logger.error(f"Строка {token.lineno(1)}:\n{message}")
-        else:
-            logger.error(f"{message}")
+        if Parser.INPUT_ID not in self.identifiers:
+            logger.warning("Input block not defined in the module.")

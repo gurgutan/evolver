@@ -8,7 +8,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 
 
-class Lexer:
+class Tokenizer:
     def __init__(self, **kwargs):
         self.lexer = lex.lex(module=self, **kwargs)
 
@@ -16,7 +16,7 @@ class Lexer:
         pass
 
     # Зарезервиврованные слова
-    reserved_funcid = {
+    reserved_ids = {
         "relu": "RELU",
         "sigmoid": "SIGMOID",
         "tanh": "TANH",
@@ -70,7 +70,7 @@ class Lexer:
         "POWER",
         "SEMICOLON",
         "COMMENT",
-    ] + list(reserved_funcid.values())
+    ] + list(reserved_ids.values())
 
     t_COMMA = r"\,"
     t_PLUS = r"\+"
@@ -102,7 +102,7 @@ class Lexer:
 
     def t_ID(self, t):
         r"[a-zA-Z_][a-zA-Z0-9_]*"
-        t.type = self.reserved_funcid.get(t.value, "ID")
+        t.type = self.reserved_ids.get(t.value, "ID")
         return t
 
     # def t_FUNCID(self, t):
