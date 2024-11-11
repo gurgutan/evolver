@@ -1,3 +1,4 @@
+import torch
 from torch.nn import Module
 from torchview import draw_graph
 
@@ -5,6 +6,10 @@ from torchview import draw_graph
 def model_params_count(module: Module) -> int:
     count = sum(p.numel() for p in module.parameters())
     return count
+
+
+def model_input_shape(module: Module) -> tuple:
+    return list(module.parameters())[0].shape
 
 
 def draw_model(module: Module, filename: str, folder: str, depth: int = 8, **kwargs):
