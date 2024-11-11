@@ -1,7 +1,7 @@
 import streamlit as st
 import torch
 from torchview import draw_graph
-from generator.parser import Parser
+from generator.interpreter import Interpreter
 import generator.bricks as bricks
 import sys
 import time
@@ -68,9 +68,9 @@ def generate_model(expr: str) -> dict:
     print(text)
     start_time = time.time()
     # создаем парсер
-    parser = Parser()
+    parser = Interpreter()
     # создаем модели из строки expr
-    modules = parser.from_str(expr)
+    modules = parser._from_str(expr)
     # # Создаем модули их json-файла
     # modules = parser.from_json('nntest.json')
     # Выбираем модуль, который записан в переменную output

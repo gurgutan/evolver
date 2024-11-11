@@ -1,11 +1,12 @@
 ################################################################
 # Лексер
 # Содержит определение класса NBLexer
-# Слеповичев И.И. 20.06.2023
+# Слеповичев И.И. 20.11.2024
 ################################################################
 
+import secrets
+import string
 import ply.lex as lex
-import ply.yacc as yacc
 
 
 class Tokenizer:
@@ -53,8 +54,8 @@ class Tokenizer:
 
     # list of TOKENS
     tokens = [
+        "SHAPE",
         "COMMA",
-        "FEATURES",
         "NUMBER",
         "ID",
         "PLUS",
@@ -89,7 +90,7 @@ class Tokenizer:
         r"\n+"
         t.lexer.lineno += len(t.value)
 
-    def t_FEATURES(self, t):
+    def t_SHAPE(self, t):
         r"\@\d+"
         t.value = int(t.value[1:])
         return t
@@ -119,3 +120,9 @@ class Tokenizer:
 
     def t_nl(self, t):
         r"(\n|\r|\r\n)|\s|\t"
+
+
+def generate_identifier(length=16):
+    valid_chars = string.ascii_lowercase + string.digits
+    random_string = "id_" + "".join(secrets.choice(valid_chars) for _ in range(length))
+    return random_string

@@ -69,16 +69,35 @@
 #   b = {{@8 -> relu + @8 -> relu} ^ 2} % 2 -> @16 -> softmax;
 #########################################################################
 
+import copy
 from pathlib import Path
+import time
 from typing import Dict, Union
 import torch.nn as nn
 import json
 
 from ply import yacc
 from generator.errors import ParserError
-from generator.grammars import AnnetGrammar
+from generator.grammars import AnnetParser
 from generator.lexer import Tokenizer
 from loguru import logger
+from generator.bricks import (
+    Activator,
+    Sum,
+    Composition,
+    Linear,
+    Multiplicator,
+    Splitter,
+)
+from generator.astnodes import (
+    ASTNode,
+    AssigmentNode,
+    OperationNode,
+    ModuleNode,
+    IdentifierNode,
+    NumberNode,
+    ScriptNode,
+)
 
 # TODO Восстановление описания по модулю нужно как то увязать с описаним грамматики
 # TODO Добавить loss функции
@@ -88,7 +107,7 @@ from loguru import logger
 
 
 # Класс парсера для создания модуля нейросети
-class Parser(AnnetGrammar):
+class Interpreter(AnnetParser):
     """
     A class to parse neural network module definitions from various formats.
 
@@ -101,79 +120,11 @@ class Parser(AnnetGrammar):
 
     def __init__(self, lexer: Tokenizer = None, verbose: bool = True):
         super().__init__(lexer or Tokenizer(), verbose)
-        logger.info("Инициализация парсера...")
-        self.parser = yacc.yacc(module=self, start="module")
-        self.result = None
+        self.parser = yacc.yacc(module=self, start="script")
+        self.ast = None
         self.verbose = verbose
-
-    def from_str(self, s: str) -> Dict[str, nn.Module]:
-        """
-        Parse a string and return a dictionary of named neural network modules.
-
-        Args:
-            s (str): The input string to parse.
-
-        Returns:
-            Dict[str, nn.Module]: A dictionary of named modules.
-
-        Raises:
-            ParserError: If there's an error during parsing.
-
-        Examples:
-            x = @64;        # x - torch.nn.Linear shape (64,)
-            output = {{@4 -> relu + @8 -> relu} ^ 2} % 2 -> @16 -> softmax;
-        """
-        self.identifiers.clear()
-        try:
-            self.result = self.parser.parse(
-                s, tracking=True, lexer=self.tokenizer.lexer
-            )
-            self._check_output()
-            return self.identifiers
-        except ParserError as e:
-            logger.error(str(e))
-            raise
-
-    def from_txt(self, filename: str) -> dict:
-        """
-        Parse a script from a file filename. Returns a dictionary with named neural network modules.
-        The file format corresponds to the format of the string accepted by self.from_str.
-
-        Args:
-            filename (str): The path to the input file.
-
-        Returns:
-            dict: A dictionary of named modules.
-        """
-        text = Path(filename).read_text()
-        return self.from_str(text)
-
-    def from_dict(self, d: dict) -> dict:
-        """
-        Parse from a dictionary d. Returns a dictionary with named neural network modules.
-        The key is the name of the expression, and the value is the expression string.
-
-        Args:
-            d (dict): A dictionary of expressions.
-
-        Returns:
-            dict: A dictionary of named modules.
-        """
-        s = ";\n".join(f"{key} = {value.rstrip(';')}" for key, value in d.items())
-        return self.from_str(f"{s};")
-
-    def from_json(self, filename: str) -> dict:
-        """
-        Parse from a JSON file filename. Returns a dictionary with named neural network modules.
-
-        Args:
-            filename (str): The path to the JSON file.
-
-        Returns:
-            dict: A dictionary of named modules.
-        """
-        json_dict = json.loads(Path(filename).read_text())
-        return self.from_dict(json_dict)
+        self.modules = dict()
+        self.statistics = dict()
 
     def parse(
         self, input_data: Union[str, Dict[str, str], Path]
@@ -190,8 +141,51 @@ class Parser(AnnetGrammar):
         Raises:
             ParserError: If there's an error during parsing.
         """
+        start_time = time.time()
         validated_input = self._validate_input(input_data)
-        return self.from_str(validated_input)
+        result = self._from_str(validated_input)
+        end_time = time.time()
+
+        self.statistics["compile_time"] = end_time - start_time
+        logger.info(f"Time to generate models: {end_time-start_time}")
+        return result
+
+    def _from_str(self, s: str) -> Dict[str, nn.Module]:
+        """
+        Parse a string and return a dictionary of named neural network modules.
+
+        Args:
+            s (str): The input string to parse.
+
+        Returns:
+            Dict[str, nn.Module]: A dictionary of named modules.
+
+        Examples:
+            x = @64;        # x - torch.nn.Linear shape (64,)
+            output = {{@4 -> relu + @8 -> relu} ^ 2} % 2 -> @16 -> softmax;
+        """
+        self.statistics.clear()
+        self.modules.clear()
+        self.ast = None
+        try:
+            self.ast = self.parser.parse(s, tracking=True, lexer=self.tokenizer.lexer)
+            self.script = self.ast_to_script(self.ast_root)
+            return copy.deepcopy(self.modules)
+        except ParserError as e:
+            logger.error(str(e))
+            raise
+
+    def _from_txt(self, filename: str) -> dict:
+        text = Path(filename).read_text()
+        return self._from_str(text)
+
+    def _from_dict(self, d: dict) -> dict:
+        s = ";\n".join(f"{key} = {value.rstrip(';')}" for key, value in d.items())
+        return self._from_str(f"{s};")
+
+    def _from_json(self, filename: str) -> dict:
+        json_dict = json.loads(Path(filename).read_text())
+        return self._from_dict(json_dict)
 
     def _validate_input(self, input_data: Union[str, Dict[str, str], Path]) -> str:
         """
@@ -209,35 +203,68 @@ class Parser(AnnetGrammar):
         if isinstance(input_data, str):
             return input_data
         elif isinstance(input_data, dict):
-            return self.from_dict(input_data)
+            return self._from_dict(input_data)
         elif isinstance(input_data, Path):
             if input_data.suffix == ".json":
-                return self.from_json(input_data)
-            elif input_data.suffix == ".txt":
+                return self._from_json(input_data)
+            elif input_data.suffix == ".annet":
                 return self._read_file(input_data)
             else:
                 raise ParserError(f"Unsupported file type: {input_data.suffix}")
         else:
             raise ParserError(f"Unsupported input type: {type(input_data)}")
 
-    def _check_output(self):
+    def _read_file(self, filename: str) -> str:
+        return Path(filename).read_text()
+
+    def ast_to_script(self, node: ASTNode):
         """
-        Check if 'output' and 'input' blocks are defined in the parsed module.
-        If 'output' is not defined, use the last defined block as output.
+        Преобразует узел AST в конечный модуль.
+
+        Args:
+            node (ASTNode): Узел AST.
+
+        Returns:
+            nn.Module: Конечный модуль.
         """
-        if not self.identifiers:
-            raise ParserError("No modules were defined during parsing.")
+        if isinstance(node, ScriptNode):
+            for assigment in node.assigments:
+                self.ast_to_script(assigment)
+            return self.modules
+        elif isinstance(node, ModuleNode):
+            if node.module_type == "Linear":
+                return Linear(*node.params)
+            elif node.module_type == "Activator":
+                return Activator(node.params[0])
+            # Добавить другие модули по мере необходимости
+            raise ValueError(f"Unknown module type: {node.module_type}")
 
-        if Parser.OUTPUT_ID not in self.identifiers:
-            last_id = list(self.identifiers.keys())[-1]
-            logger.warning(f"Output block not defined. Using '{last_id}' as output.")
-            self.identifiers[Parser.OUTPUT_ID] = self.identifiers[last_id]
+        elif isinstance(node, OperationNode):
+            left_module = self.ast_to_script(node.left)
+            right_module = self.ast_to_script(node.right)
 
-        if not isinstance(self.identifiers[Parser.OUTPUT_ID], nn.Module):
-            raise ParserError(
-                "The 'output' block is not a valid neural network module, but\n"
-                f"{type(self.identifiers[Parser.OUTPUT_ID])}"
-            )
+            if node.operator == "plus":
+                return Sum(left_module, right_module)
+            elif node.operator == "arrow":
+                return Composition(left_module, right_module)
+            elif node.operator == "power":
+                return Multiplicator(left_module, node.right.value)
+            elif node.operator == "percent":
+                return Splitter(left_module, node.right.value)
 
-        if Parser.INPUT_ID not in self.identifiers:
-            logger.warning("Input block not defined in the module.")
+        elif isinstance(node, AssigmentNode):
+            module = self.ast_to_script(node.value)
+            self.modules[node.name] = module
+            return module
+
+        elif isinstance(node, NumberNode):
+            return Linear(node.value)
+
+        elif isinstance(node, IdentifierNode):
+            if node.name in self.modules:
+                return self.modules[node.name]
+            elif node.name in self.assigments:
+                raise ValueError(f"Identifier {node.name} used before definition.")
+            raise ValueError(f"Identifier {node.name} not found.")
+
+        raise ValueError("Invalid AST node.")

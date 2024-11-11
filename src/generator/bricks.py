@@ -290,7 +290,7 @@ class Activator(nn.Module):
         return f"{self.func_name}"
 
 
-class Adder(nn.Module):
+class Sum(nn.Module):
     def __init__(self, left: nn.Module, right: nn.Module, device: str = "cpu"):
         """
         Initializes a new instance of the class. Output shapes of left and right must be equal
@@ -335,7 +335,7 @@ class Adder(nn.Module):
         return "{" + f"{self.left.expr_str(expand)}+{self.right.expr_str(expand)}" + "}"
 
 
-class Composer(nn.Module):
+class Composition(nn.Module):
     def __init__(self, left: nn.Module, right: nn.Module, device: str = "cpu"):
         super().__init__()
         self.left = left
@@ -542,14 +542,14 @@ class Splitter(nn.Module):
         """
         super().__init__()
         assert split > 0, "split must be positive"
-        self.layers = nn.ModuleList([copy.deepcopy(brick) for _ in range(split)])
+        self.models = nn.ModuleList([copy.deepcopy(brick) for _ in range(split)])
         self.split = split
         self.save_shape = save_shape
         self.device = device
         self.to(self.device)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        y = [layer(x) for layer in self.layers]
+        y = [layer(x) for layer in self.models]
         if self.save_shape:
             stack = torch.stack(y, dim=1)
             return stack.sum(dim=1) / self.split
@@ -563,7 +563,7 @@ class Splitter(nn.Module):
     #     return f"{self.layers[0].__repr__()}%{self.split}"
 
     def expr_str(self, expand=True):
-        return f"{self.layers[0].expr_str(expand)}%{self.split}"
+        return f"{self.models[0].expr_str(expand)}%{self.split}"
 
 
 class Namer(nn.Module):
