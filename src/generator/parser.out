@@ -2,7 +2,6 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    FUNCID
     STAR
 
 Grammar
@@ -41,7 +40,6 @@ COMMENT              : 1
 ELU                  : 21
 EQUALS               : 4
 FEATURES             : 9
-FUNCID               : 
 ID                   : 4 10
 LCBRACE              : 11
 LEAKY_RELU           : 20

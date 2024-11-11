@@ -57,7 +57,6 @@ class Tokenizer:
         "FEATURES",
         "NUMBER",
         "ID",
-        "FUNCID",
         "PLUS",
         "STAR",
         "RARROW",

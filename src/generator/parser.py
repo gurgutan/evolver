@@ -120,7 +120,7 @@ class Parser(AnnetGrammar):
             ParserError: If there's an error during parsing.
 
         Examples:
-            x = @64;        # x - torch.nn.Linear shape (64,1)
+            x = @64;        # x - torch.nn.Linear shape (64,)
             output = {{@4 -> relu + @8 -> relu} ^ 2} % 2 -> @16 -> softmax;
         """
         self.identifiers.clear()
