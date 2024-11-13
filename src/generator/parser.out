@@ -6,624 +6,684 @@ Unused terminals:
 
 Grammar
 
-Rule 0     S' -> module
-Rule 1     module -> COMMENT
-Rule 2     module -> definition
-Rule 3     module -> module definition
-Rule 4     definition -> ID EQUALS expression SEMICOLON
-Rule 5     expression -> expression PLUS expression
-Rule 6     expression -> expression RARROW expression
-Rule 7     expression -> expression POWER NUMBER
-Rule 8     expression -> expression PERCENT NUMBER
-Rule 9     expression -> FEATURES
-Rule 10    expression -> ID
-Rule 11    expression -> LCBRACE expression RCBRACE
-Rule 12    params -> LPAREN param_list RPAREN
-Rule 13    params -> LPAREN RPAREN
-Rule 14    param_list -> NUMBER
-Rule 15    param_list -> param_list COMMA NUMBER
-Rule 16    expression -> RELU
-Rule 17    expression -> SIGMOID
-Rule 18    expression -> TANH
-Rule 19    expression -> SOFTMAX
-Rule 20    expression -> LEAKY_RELU
-Rule 21    expression -> ELU
-Rule 22    expression -> SELU
-Rule 23    expression -> SOFTPLUS
-Rule 24    expression -> LOG_SOFTMAX
-Rule 25    expression -> LINEAR params
+Rule 0     S' -> script
+Rule 1     script -> assigments
+Rule 2     assigments -> COMMENT
+Rule 3     assigments -> assigment
+Rule 4     assigments -> assigments assigment
+Rule 5     assigment -> ID EQUALS expression SEMICOLON
+Rule 6     expression -> expression PLUS expression
+Rule 7     expression -> expression RARROW expression
+Rule 8     expression -> expression POWER NUMBER
+Rule 9     expression -> expression PERCENT NUMBER
+Rule 10    expression -> LCBRACE expression RCBRACE
+Rule 11    expression -> SHAPE
+Rule 12    expression -> STRING
+Rule 13    expression -> ID
+Rule 14    params -> LPAREN param_list RPAREN
+Rule 15    params -> LPAREN RPAREN
+Rule 16    param_list -> parameter
+Rule 17    param_list -> param_list COMMA parameter
+Rule 18    parameter -> NUMBER
+Rule 19    parameter -> STRING
+Rule 20    expression -> RELU
+Rule 21    expression -> SIGMOID
+Rule 22    expression -> TANH
+Rule 23    expression -> SOFTMAX
+Rule 24    expression -> LEAKY_RELU
+Rule 25    expression -> ELU
+Rule 26    expression -> SELU
+Rule 27    expression -> SOFTPLUS
+Rule 28    expression -> LOG_SOFTMAX
+Rule 29    expression -> LINEAR params
 
 Terminals, with rules where they appear
 
-COMMA                : 15
-COMMENT              : 1
-ELU                  : 21
-EQUALS               : 4
-FEATURES             : 9
-ID                   : 4 10
-LCBRACE              : 11
-LEAKY_RELU           : 20
-LINEAR               : 25
-LOG_SOFTMAX          : 24
-LPAREN               : 12 13
-NUMBER               : 7 8 14 15
-PERCENT              : 8
-PLUS                 : 5
-POWER                : 7
-RARROW               : 6
-RCBRACE              : 11
-RELU                 : 16
-RPAREN               : 12 13
-SELU                 : 22
-SEMICOLON            : 4
-SIGMOID              : 17
-SOFTMAX              : 19
-SOFTPLUS             : 23
+COMMA                : 17
+COMMENT              : 2
+ELU                  : 25
+EQUALS               : 5
+ID                   : 5 13
+LCBRACE              : 10
+LEAKY_RELU           : 24
+LINEAR               : 29
+LOG_SOFTMAX          : 28
+LPAREN               : 14 15
+NUMBER               : 8 9 18
+PERCENT              : 9
+PLUS                 : 6
+POWER                : 8
+RARROW               : 7
+RCBRACE              : 10
+RELU                 : 20
+RPAREN               : 14 15
+SELU                 : 26
+SEMICOLON            : 5
+SHAPE                : 11
+SIGMOID              : 21
+SOFTMAX              : 23
+SOFTPLUS             : 27
 STAR                 : 
-TANH                 : 18
+STRING               : 12 19
+TANH                 : 22
 error                : 
 
 Nonterminals, with rules where they appear
 
-definition           : 2 3
-expression           : 4 5 5 6 6 7 8 11
-module               : 3 0
-param_list           : 12 15
-params               : 25
+assigment            : 3 4
+assigments           : 1 4
+expression           : 5 6 6 7 7 8 9 10
+param_list           : 14 17
+parameter            : 16 17
+params               : 29
+script               : 0
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . module
-    (1) module -> . COMMENT
-    (2) module -> . definition
-    (3) module -> . module definition
-    (4) definition -> . ID EQUALS expression SEMICOLON
+    (0) S' -> . script
+    (1) script -> . assigments
+    (2) assigments -> . COMMENT
+    (3) assigments -> . assigment
+    (4) assigments -> . assigments assigment
+    (5) assigment -> . ID EQUALS expression SEMICOLON
 
-    COMMENT         shift and go to state 2
-    ID              shift and go to state 4
+    COMMENT         shift and go to state 3
+    ID              shift and go to state 5
 
-    module                         shift and go to state 1
-    definition                     shift and go to state 3
+    script                         shift and go to state 1
+    assigments                     shift and go to state 2
+    assigment                      shift and go to state 4
 
 state 1
 
-    (0) S' -> module .
-    (3) module -> module . definition
-    (4) definition -> . ID EQUALS expression SEMICOLON
+    (0) S' -> script .
 
-    ID              shift and go to state 4
 
-    definition                     shift and go to state 5
 
 state 2
 
-    (1) module -> COMMENT .
+    (1) script -> assigments .
+    (4) assigments -> assigments . assigment
+    (5) assigment -> . ID EQUALS expression SEMICOLON
 
-    ID              reduce using rule 1 (module -> COMMENT .)
-    $end            reduce using rule 1 (module -> COMMENT .)
+    $end            reduce using rule 1 (script -> assigments .)
+    ID              shift and go to state 5
 
+    assigment                      shift and go to state 6
 
 state 3
 
-    (2) module -> definition .
+    (2) assigments -> COMMENT .
 
-    ID              reduce using rule 2 (module -> definition .)
-    $end            reduce using rule 2 (module -> definition .)
+    ID              reduce using rule 2 (assigments -> COMMENT .)
+    $end            reduce using rule 2 (assigments -> COMMENT .)
 
 
 state 4
 
-    (4) definition -> ID . EQUALS expression SEMICOLON
+    (3) assigments -> assigment .
 
-    EQUALS          shift and go to state 6
+    ID              reduce using rule 3 (assigments -> assigment .)
+    $end            reduce using rule 3 (assigments -> assigment .)
 
 
 state 5
 
-    (3) module -> module definition .
+    (5) assigment -> ID . EQUALS expression SEMICOLON
 
-    ID              reduce using rule 3 (module -> module definition .)
-    $end            reduce using rule 3 (module -> module definition .)
+    EQUALS          shift and go to state 7
 
 
 state 6
 
-    (4) definition -> ID EQUALS . expression SEMICOLON
-    (5) expression -> . expression PLUS expression
-    (6) expression -> . expression RARROW expression
-    (7) expression -> . expression POWER NUMBER
-    (8) expression -> . expression PERCENT NUMBER
-    (9) expression -> . FEATURES
-    (10) expression -> . ID
-    (11) expression -> . LCBRACE expression RCBRACE
-    (16) expression -> . RELU
-    (17) expression -> . SIGMOID
-    (18) expression -> . TANH
-    (19) expression -> . SOFTMAX
-    (20) expression -> . LEAKY_RELU
-    (21) expression -> . ELU
-    (22) expression -> . SELU
-    (23) expression -> . SOFTPLUS
-    (24) expression -> . LOG_SOFTMAX
-    (25) expression -> . LINEAR params
+    (4) assigments -> assigments assigment .
 
-    FEATURES        shift and go to state 9
-    ID              shift and go to state 7
-    LCBRACE         shift and go to state 10
-    RELU            shift and go to state 11
-    SIGMOID         shift and go to state 12
-    TANH            shift and go to state 13
-    SOFTMAX         shift and go to state 14
-    LEAKY_RELU      shift and go to state 15
-    ELU             shift and go to state 16
-    SELU            shift and go to state 17
-    SOFTPLUS        shift and go to state 18
-    LOG_SOFTMAX     shift and go to state 19
-    LINEAR          shift and go to state 20
+    ID              reduce using rule 4 (assigments -> assigments assigment .)
+    $end            reduce using rule 4 (assigments -> assigments assigment .)
 
-    expression                     shift and go to state 8
 
 state 7
 
-    (10) expression -> ID .
+    (5) assigment -> ID EQUALS . expression SEMICOLON
+    (6) expression -> . expression PLUS expression
+    (7) expression -> . expression RARROW expression
+    (8) expression -> . expression POWER NUMBER
+    (9) expression -> . expression PERCENT NUMBER
+    (10) expression -> . LCBRACE expression RCBRACE
+    (11) expression -> . SHAPE
+    (12) expression -> . STRING
+    (13) expression -> . ID
+    (20) expression -> . RELU
+    (21) expression -> . SIGMOID
+    (22) expression -> . TANH
+    (23) expression -> . SOFTMAX
+    (24) expression -> . LEAKY_RELU
+    (25) expression -> . ELU
+    (26) expression -> . SELU
+    (27) expression -> . SOFTPLUS
+    (28) expression -> . LOG_SOFTMAX
+    (29) expression -> . LINEAR params
 
-    SEMICOLON       reduce using rule 10 (expression -> ID .)
-    PLUS            reduce using rule 10 (expression -> ID .)
-    RARROW          reduce using rule 10 (expression -> ID .)
-    POWER           reduce using rule 10 (expression -> ID .)
-    PERCENT         reduce using rule 10 (expression -> ID .)
-    RCBRACE         reduce using rule 10 (expression -> ID .)
+    LCBRACE         shift and go to state 10
+    SHAPE           shift and go to state 11
+    STRING          shift and go to state 12
+    ID              shift and go to state 8
+    RELU            shift and go to state 13
+    SIGMOID         shift and go to state 14
+    TANH            shift and go to state 15
+    SOFTMAX         shift and go to state 16
+    LEAKY_RELU      shift and go to state 17
+    ELU             shift and go to state 18
+    SELU            shift and go to state 19
+    SOFTPLUS        shift and go to state 20
+    LOG_SOFTMAX     shift and go to state 21
+    LINEAR          shift and go to state 22
 
+    expression                     shift and go to state 9
 
 state 8
 
-    (4) definition -> ID EQUALS expression . SEMICOLON
-    (5) expression -> expression . PLUS expression
-    (6) expression -> expression . RARROW expression
-    (7) expression -> expression . POWER NUMBER
-    (8) expression -> expression . PERCENT NUMBER
+    (13) expression -> ID .
 
-    SEMICOLON       shift and go to state 21
-    PLUS            shift and go to state 22
-    RARROW          shift and go to state 23
-    POWER           shift and go to state 24
-    PERCENT         shift and go to state 25
+    SEMICOLON       reduce using rule 13 (expression -> ID .)
+    PLUS            reduce using rule 13 (expression -> ID .)
+    RARROW          reduce using rule 13 (expression -> ID .)
+    POWER           reduce using rule 13 (expression -> ID .)
+    PERCENT         reduce using rule 13 (expression -> ID .)
+    RCBRACE         reduce using rule 13 (expression -> ID .)
 
 
 state 9
 
-    (9) expression -> FEATURES .
+    (5) assigment -> ID EQUALS expression . SEMICOLON
+    (6) expression -> expression . PLUS expression
+    (7) expression -> expression . RARROW expression
+    (8) expression -> expression . POWER NUMBER
+    (9) expression -> expression . PERCENT NUMBER
 
-    SEMICOLON       reduce using rule 9 (expression -> FEATURES .)
-    PLUS            reduce using rule 9 (expression -> FEATURES .)
-    RARROW          reduce using rule 9 (expression -> FEATURES .)
-    POWER           reduce using rule 9 (expression -> FEATURES .)
-    PERCENT         reduce using rule 9 (expression -> FEATURES .)
-    RCBRACE         reduce using rule 9 (expression -> FEATURES .)
+    SEMICOLON       shift and go to state 23
+    PLUS            shift and go to state 24
+    RARROW          shift and go to state 25
+    POWER           shift and go to state 26
+    PERCENT         shift and go to state 27
 
 
 state 10
 
-    (11) expression -> LCBRACE . expression RCBRACE
-    (5) expression -> . expression PLUS expression
-    (6) expression -> . expression RARROW expression
-    (7) expression -> . expression POWER NUMBER
-    (8) expression -> . expression PERCENT NUMBER
-    (9) expression -> . FEATURES
-    (10) expression -> . ID
-    (11) expression -> . LCBRACE expression RCBRACE
-    (16) expression -> . RELU
-    (17) expression -> . SIGMOID
-    (18) expression -> . TANH
-    (19) expression -> . SOFTMAX
-    (20) expression -> . LEAKY_RELU
-    (21) expression -> . ELU
-    (22) expression -> . SELU
-    (23) expression -> . SOFTPLUS
-    (24) expression -> . LOG_SOFTMAX
-    (25) expression -> . LINEAR params
+    (10) expression -> LCBRACE . expression RCBRACE
+    (6) expression -> . expression PLUS expression
+    (7) expression -> . expression RARROW expression
+    (8) expression -> . expression POWER NUMBER
+    (9) expression -> . expression PERCENT NUMBER
+    (10) expression -> . LCBRACE expression RCBRACE
+    (11) expression -> . SHAPE
+    (12) expression -> . STRING
+    (13) expression -> . ID
+    (20) expression -> . RELU
+    (21) expression -> . SIGMOID
+    (22) expression -> . TANH
+    (23) expression -> . SOFTMAX
+    (24) expression -> . LEAKY_RELU
+    (25) expression -> . ELU
+    (26) expression -> . SELU
+    (27) expression -> . SOFTPLUS
+    (28) expression -> . LOG_SOFTMAX
+    (29) expression -> . LINEAR params
 
-    FEATURES        shift and go to state 9
-    ID              shift and go to state 7
     LCBRACE         shift and go to state 10
-    RELU            shift and go to state 11
-    SIGMOID         shift and go to state 12
-    TANH            shift and go to state 13
-    SOFTMAX         shift and go to state 14
-    LEAKY_RELU      shift and go to state 15
-    ELU             shift and go to state 16
-    SELU            shift and go to state 17
-    SOFTPLUS        shift and go to state 18
-    LOG_SOFTMAX     shift and go to state 19
-    LINEAR          shift and go to state 20
+    SHAPE           shift and go to state 11
+    STRING          shift and go to state 12
+    ID              shift and go to state 8
+    RELU            shift and go to state 13
+    SIGMOID         shift and go to state 14
+    TANH            shift and go to state 15
+    SOFTMAX         shift and go to state 16
+    LEAKY_RELU      shift and go to state 17
+    ELU             shift and go to state 18
+    SELU            shift and go to state 19
+    SOFTPLUS        shift and go to state 20
+    LOG_SOFTMAX     shift and go to state 21
+    LINEAR          shift and go to state 22
 
-    expression                     shift and go to state 26
+    expression                     shift and go to state 28
 
 state 11
 
-    (16) expression -> RELU .
+    (11) expression -> SHAPE .
 
-    SEMICOLON       reduce using rule 16 (expression -> RELU .)
-    PLUS            reduce using rule 16 (expression -> RELU .)
-    RARROW          reduce using rule 16 (expression -> RELU .)
-    POWER           reduce using rule 16 (expression -> RELU .)
-    PERCENT         reduce using rule 16 (expression -> RELU .)
-    RCBRACE         reduce using rule 16 (expression -> RELU .)
+    SEMICOLON       reduce using rule 11 (expression -> SHAPE .)
+    PLUS            reduce using rule 11 (expression -> SHAPE .)
+    RARROW          reduce using rule 11 (expression -> SHAPE .)
+    POWER           reduce using rule 11 (expression -> SHAPE .)
+    PERCENT         reduce using rule 11 (expression -> SHAPE .)
+    RCBRACE         reduce using rule 11 (expression -> SHAPE .)
 
 
 state 12
 
-    (17) expression -> SIGMOID .
+    (12) expression -> STRING .
 
-    SEMICOLON       reduce using rule 17 (expression -> SIGMOID .)
-    PLUS            reduce using rule 17 (expression -> SIGMOID .)
-    RARROW          reduce using rule 17 (expression -> SIGMOID .)
-    POWER           reduce using rule 17 (expression -> SIGMOID .)
-    PERCENT         reduce using rule 17 (expression -> SIGMOID .)
-    RCBRACE         reduce using rule 17 (expression -> SIGMOID .)
+    SEMICOLON       reduce using rule 12 (expression -> STRING .)
+    PLUS            reduce using rule 12 (expression -> STRING .)
+    RARROW          reduce using rule 12 (expression -> STRING .)
+    POWER           reduce using rule 12 (expression -> STRING .)
+    PERCENT         reduce using rule 12 (expression -> STRING .)
+    RCBRACE         reduce using rule 12 (expression -> STRING .)
 
 
 state 13
 
-    (18) expression -> TANH .
+    (20) expression -> RELU .
 
-    SEMICOLON       reduce using rule 18 (expression -> TANH .)
-    PLUS            reduce using rule 18 (expression -> TANH .)
-    RARROW          reduce using rule 18 (expression -> TANH .)
-    POWER           reduce using rule 18 (expression -> TANH .)
-    PERCENT         reduce using rule 18 (expression -> TANH .)
-    RCBRACE         reduce using rule 18 (expression -> TANH .)
+    SEMICOLON       reduce using rule 20 (expression -> RELU .)
+    PLUS            reduce using rule 20 (expression -> RELU .)
+    RARROW          reduce using rule 20 (expression -> RELU .)
+    POWER           reduce using rule 20 (expression -> RELU .)
+    PERCENT         reduce using rule 20 (expression -> RELU .)
+    RCBRACE         reduce using rule 20 (expression -> RELU .)
 
 
 state 14
 
-    (19) expression -> SOFTMAX .
+    (21) expression -> SIGMOID .
 
-    SEMICOLON       reduce using rule 19 (expression -> SOFTMAX .)
-    PLUS            reduce using rule 19 (expression -> SOFTMAX .)
-    RARROW          reduce using rule 19 (expression -> SOFTMAX .)
-    POWER           reduce using rule 19 (expression -> SOFTMAX .)
-    PERCENT         reduce using rule 19 (expression -> SOFTMAX .)
-    RCBRACE         reduce using rule 19 (expression -> SOFTMAX .)
+    SEMICOLON       reduce using rule 21 (expression -> SIGMOID .)
+    PLUS            reduce using rule 21 (expression -> SIGMOID .)
+    RARROW          reduce using rule 21 (expression -> SIGMOID .)
+    POWER           reduce using rule 21 (expression -> SIGMOID .)
+    PERCENT         reduce using rule 21 (expression -> SIGMOID .)
+    RCBRACE         reduce using rule 21 (expression -> SIGMOID .)
 
 
 state 15
 
-    (20) expression -> LEAKY_RELU .
+    (22) expression -> TANH .
 
-    SEMICOLON       reduce using rule 20 (expression -> LEAKY_RELU .)
-    PLUS            reduce using rule 20 (expression -> LEAKY_RELU .)
-    RARROW          reduce using rule 20 (expression -> LEAKY_RELU .)
-    POWER           reduce using rule 20 (expression -> LEAKY_RELU .)
-    PERCENT         reduce using rule 20 (expression -> LEAKY_RELU .)
-    RCBRACE         reduce using rule 20 (expression -> LEAKY_RELU .)
+    SEMICOLON       reduce using rule 22 (expression -> TANH .)
+    PLUS            reduce using rule 22 (expression -> TANH .)
+    RARROW          reduce using rule 22 (expression -> TANH .)
+    POWER           reduce using rule 22 (expression -> TANH .)
+    PERCENT         reduce using rule 22 (expression -> TANH .)
+    RCBRACE         reduce using rule 22 (expression -> TANH .)
 
 
 state 16
 
-    (21) expression -> ELU .
+    (23) expression -> SOFTMAX .
 
-    SEMICOLON       reduce using rule 21 (expression -> ELU .)
-    PLUS            reduce using rule 21 (expression -> ELU .)
-    RARROW          reduce using rule 21 (expression -> ELU .)
-    POWER           reduce using rule 21 (expression -> ELU .)
-    PERCENT         reduce using rule 21 (expression -> ELU .)
-    RCBRACE         reduce using rule 21 (expression -> ELU .)
+    SEMICOLON       reduce using rule 23 (expression -> SOFTMAX .)
+    PLUS            reduce using rule 23 (expression -> SOFTMAX .)
+    RARROW          reduce using rule 23 (expression -> SOFTMAX .)
+    POWER           reduce using rule 23 (expression -> SOFTMAX .)
+    PERCENT         reduce using rule 23 (expression -> SOFTMAX .)
+    RCBRACE         reduce using rule 23 (expression -> SOFTMAX .)
 
 
 state 17
 
-    (22) expression -> SELU .
+    (24) expression -> LEAKY_RELU .
 
-    SEMICOLON       reduce using rule 22 (expression -> SELU .)
-    PLUS            reduce using rule 22 (expression -> SELU .)
-    RARROW          reduce using rule 22 (expression -> SELU .)
-    POWER           reduce using rule 22 (expression -> SELU .)
-    PERCENT         reduce using rule 22 (expression -> SELU .)
-    RCBRACE         reduce using rule 22 (expression -> SELU .)
+    SEMICOLON       reduce using rule 24 (expression -> LEAKY_RELU .)
+    PLUS            reduce using rule 24 (expression -> LEAKY_RELU .)
+    RARROW          reduce using rule 24 (expression -> LEAKY_RELU .)
+    POWER           reduce using rule 24 (expression -> LEAKY_RELU .)
+    PERCENT         reduce using rule 24 (expression -> LEAKY_RELU .)
+    RCBRACE         reduce using rule 24 (expression -> LEAKY_RELU .)
 
 
 state 18
 
-    (23) expression -> SOFTPLUS .
+    (25) expression -> ELU .
 
-    SEMICOLON       reduce using rule 23 (expression -> SOFTPLUS .)
-    PLUS            reduce using rule 23 (expression -> SOFTPLUS .)
-    RARROW          reduce using rule 23 (expression -> SOFTPLUS .)
-    POWER           reduce using rule 23 (expression -> SOFTPLUS .)
-    PERCENT         reduce using rule 23 (expression -> SOFTPLUS .)
-    RCBRACE         reduce using rule 23 (expression -> SOFTPLUS .)
+    SEMICOLON       reduce using rule 25 (expression -> ELU .)
+    PLUS            reduce using rule 25 (expression -> ELU .)
+    RARROW          reduce using rule 25 (expression -> ELU .)
+    POWER           reduce using rule 25 (expression -> ELU .)
+    PERCENT         reduce using rule 25 (expression -> ELU .)
+    RCBRACE         reduce using rule 25 (expression -> ELU .)
 
 
 state 19
 
-    (24) expression -> LOG_SOFTMAX .
+    (26) expression -> SELU .
 
-    SEMICOLON       reduce using rule 24 (expression -> LOG_SOFTMAX .)
-    PLUS            reduce using rule 24 (expression -> LOG_SOFTMAX .)
-    RARROW          reduce using rule 24 (expression -> LOG_SOFTMAX .)
-    POWER           reduce using rule 24 (expression -> LOG_SOFTMAX .)
-    PERCENT         reduce using rule 24 (expression -> LOG_SOFTMAX .)
-    RCBRACE         reduce using rule 24 (expression -> LOG_SOFTMAX .)
+    SEMICOLON       reduce using rule 26 (expression -> SELU .)
+    PLUS            reduce using rule 26 (expression -> SELU .)
+    RARROW          reduce using rule 26 (expression -> SELU .)
+    POWER           reduce using rule 26 (expression -> SELU .)
+    PERCENT         reduce using rule 26 (expression -> SELU .)
+    RCBRACE         reduce using rule 26 (expression -> SELU .)
 
 
 state 20
 
-    (25) expression -> LINEAR . params
-    (12) params -> . LPAREN param_list RPAREN
-    (13) params -> . LPAREN RPAREN
+    (27) expression -> SOFTPLUS .
 
-    LPAREN          shift and go to state 28
+    SEMICOLON       reduce using rule 27 (expression -> SOFTPLUS .)
+    PLUS            reduce using rule 27 (expression -> SOFTPLUS .)
+    RARROW          reduce using rule 27 (expression -> SOFTPLUS .)
+    POWER           reduce using rule 27 (expression -> SOFTPLUS .)
+    PERCENT         reduce using rule 27 (expression -> SOFTPLUS .)
+    RCBRACE         reduce using rule 27 (expression -> SOFTPLUS .)
 
-    params                         shift and go to state 27
 
 state 21
 
-    (4) definition -> ID EQUALS expression SEMICOLON .
+    (28) expression -> LOG_SOFTMAX .
 
-    ID              reduce using rule 4 (definition -> ID EQUALS expression SEMICOLON .)
-    $end            reduce using rule 4 (definition -> ID EQUALS expression SEMICOLON .)
+    SEMICOLON       reduce using rule 28 (expression -> LOG_SOFTMAX .)
+    PLUS            reduce using rule 28 (expression -> LOG_SOFTMAX .)
+    RARROW          reduce using rule 28 (expression -> LOG_SOFTMAX .)
+    POWER           reduce using rule 28 (expression -> LOG_SOFTMAX .)
+    PERCENT         reduce using rule 28 (expression -> LOG_SOFTMAX .)
+    RCBRACE         reduce using rule 28 (expression -> LOG_SOFTMAX .)
 
 
 state 22
 
-    (5) expression -> expression PLUS . expression
-    (5) expression -> . expression PLUS expression
-    (6) expression -> . expression RARROW expression
-    (7) expression -> . expression POWER NUMBER
-    (8) expression -> . expression PERCENT NUMBER
-    (9) expression -> . FEATURES
-    (10) expression -> . ID
-    (11) expression -> . LCBRACE expression RCBRACE
-    (16) expression -> . RELU
-    (17) expression -> . SIGMOID
-    (18) expression -> . TANH
-    (19) expression -> . SOFTMAX
-    (20) expression -> . LEAKY_RELU
-    (21) expression -> . ELU
-    (22) expression -> . SELU
-    (23) expression -> . SOFTPLUS
-    (24) expression -> . LOG_SOFTMAX
-    (25) expression -> . LINEAR params
+    (29) expression -> LINEAR . params
+    (14) params -> . LPAREN param_list RPAREN
+    (15) params -> . LPAREN RPAREN
 
-    FEATURES        shift and go to state 9
-    ID              shift and go to state 7
-    LCBRACE         shift and go to state 10
-    RELU            shift and go to state 11
-    SIGMOID         shift and go to state 12
-    TANH            shift and go to state 13
-    SOFTMAX         shift and go to state 14
-    LEAKY_RELU      shift and go to state 15
-    ELU             shift and go to state 16
-    SELU            shift and go to state 17
-    SOFTPLUS        shift and go to state 18
-    LOG_SOFTMAX     shift and go to state 19
-    LINEAR          shift and go to state 20
+    LPAREN          shift and go to state 30
 
-    expression                     shift and go to state 29
+    params                         shift and go to state 29
 
 state 23
 
-    (6) expression -> expression RARROW . expression
-    (5) expression -> . expression PLUS expression
-    (6) expression -> . expression RARROW expression
-    (7) expression -> . expression POWER NUMBER
-    (8) expression -> . expression PERCENT NUMBER
-    (9) expression -> . FEATURES
-    (10) expression -> . ID
-    (11) expression -> . LCBRACE expression RCBRACE
-    (16) expression -> . RELU
-    (17) expression -> . SIGMOID
-    (18) expression -> . TANH
-    (19) expression -> . SOFTMAX
-    (20) expression -> . LEAKY_RELU
-    (21) expression -> . ELU
-    (22) expression -> . SELU
-    (23) expression -> . SOFTPLUS
-    (24) expression -> . LOG_SOFTMAX
-    (25) expression -> . LINEAR params
+    (5) assigment -> ID EQUALS expression SEMICOLON .
 
-    FEATURES        shift and go to state 9
-    ID              shift and go to state 7
-    LCBRACE         shift and go to state 10
-    RELU            shift and go to state 11
-    SIGMOID         shift and go to state 12
-    TANH            shift and go to state 13
-    SOFTMAX         shift and go to state 14
-    LEAKY_RELU      shift and go to state 15
-    ELU             shift and go to state 16
-    SELU            shift and go to state 17
-    SOFTPLUS        shift and go to state 18
-    LOG_SOFTMAX     shift and go to state 19
-    LINEAR          shift and go to state 20
+    ID              reduce using rule 5 (assigment -> ID EQUALS expression SEMICOLON .)
+    $end            reduce using rule 5 (assigment -> ID EQUALS expression SEMICOLON .)
 
-    expression                     shift and go to state 30
 
 state 24
 
-    (7) expression -> expression POWER . NUMBER
+    (6) expression -> expression PLUS . expression
+    (6) expression -> . expression PLUS expression
+    (7) expression -> . expression RARROW expression
+    (8) expression -> . expression POWER NUMBER
+    (9) expression -> . expression PERCENT NUMBER
+    (10) expression -> . LCBRACE expression RCBRACE
+    (11) expression -> . SHAPE
+    (12) expression -> . STRING
+    (13) expression -> . ID
+    (20) expression -> . RELU
+    (21) expression -> . SIGMOID
+    (22) expression -> . TANH
+    (23) expression -> . SOFTMAX
+    (24) expression -> . LEAKY_RELU
+    (25) expression -> . ELU
+    (26) expression -> . SELU
+    (27) expression -> . SOFTPLUS
+    (28) expression -> . LOG_SOFTMAX
+    (29) expression -> . LINEAR params
 
-    NUMBER          shift and go to state 31
+    LCBRACE         shift and go to state 10
+    SHAPE           shift and go to state 11
+    STRING          shift and go to state 12
+    ID              shift and go to state 8
+    RELU            shift and go to state 13
+    SIGMOID         shift and go to state 14
+    TANH            shift and go to state 15
+    SOFTMAX         shift and go to state 16
+    LEAKY_RELU      shift and go to state 17
+    ELU             shift and go to state 18
+    SELU            shift and go to state 19
+    SOFTPLUS        shift and go to state 20
+    LOG_SOFTMAX     shift and go to state 21
+    LINEAR          shift and go to state 22
 
+    expression                     shift and go to state 31
 
 state 25
 
-    (8) expression -> expression PERCENT . NUMBER
+    (7) expression -> expression RARROW . expression
+    (6) expression -> . expression PLUS expression
+    (7) expression -> . expression RARROW expression
+    (8) expression -> . expression POWER NUMBER
+    (9) expression -> . expression PERCENT NUMBER
+    (10) expression -> . LCBRACE expression RCBRACE
+    (11) expression -> . SHAPE
+    (12) expression -> . STRING
+    (13) expression -> . ID
+    (20) expression -> . RELU
+    (21) expression -> . SIGMOID
+    (22) expression -> . TANH
+    (23) expression -> . SOFTMAX
+    (24) expression -> . LEAKY_RELU
+    (25) expression -> . ELU
+    (26) expression -> . SELU
+    (27) expression -> . SOFTPLUS
+    (28) expression -> . LOG_SOFTMAX
+    (29) expression -> . LINEAR params
 
-    NUMBER          shift and go to state 32
+    LCBRACE         shift and go to state 10
+    SHAPE           shift and go to state 11
+    STRING          shift and go to state 12
+    ID              shift and go to state 8
+    RELU            shift and go to state 13
+    SIGMOID         shift and go to state 14
+    TANH            shift and go to state 15
+    SOFTMAX         shift and go to state 16
+    LEAKY_RELU      shift and go to state 17
+    ELU             shift and go to state 18
+    SELU            shift and go to state 19
+    SOFTPLUS        shift and go to state 20
+    LOG_SOFTMAX     shift and go to state 21
+    LINEAR          shift and go to state 22
 
+    expression                     shift and go to state 32
 
 state 26
 
-    (11) expression -> LCBRACE expression . RCBRACE
-    (5) expression -> expression . PLUS expression
-    (6) expression -> expression . RARROW expression
-    (7) expression -> expression . POWER NUMBER
-    (8) expression -> expression . PERCENT NUMBER
+    (8) expression -> expression POWER . NUMBER
 
-    RCBRACE         shift and go to state 33
-    PLUS            shift and go to state 22
-    RARROW          shift and go to state 23
-    POWER           shift and go to state 24
-    PERCENT         shift and go to state 25
+    NUMBER          shift and go to state 33
 
 
 state 27
 
-    (25) expression -> LINEAR params .
+    (9) expression -> expression PERCENT . NUMBER
 
-    SEMICOLON       reduce using rule 25 (expression -> LINEAR params .)
-    PLUS            reduce using rule 25 (expression -> LINEAR params .)
-    RARROW          reduce using rule 25 (expression -> LINEAR params .)
-    POWER           reduce using rule 25 (expression -> LINEAR params .)
-    PERCENT         reduce using rule 25 (expression -> LINEAR params .)
-    RCBRACE         reduce using rule 25 (expression -> LINEAR params .)
+    NUMBER          shift and go to state 34
 
 
 state 28
 
-    (12) params -> LPAREN . param_list RPAREN
-    (13) params -> LPAREN . RPAREN
-    (14) param_list -> . NUMBER
-    (15) param_list -> . param_list COMMA NUMBER
+    (10) expression -> LCBRACE expression . RCBRACE
+    (6) expression -> expression . PLUS expression
+    (7) expression -> expression . RARROW expression
+    (8) expression -> expression . POWER NUMBER
+    (9) expression -> expression . PERCENT NUMBER
 
-    RPAREN          shift and go to state 35
-    NUMBER          shift and go to state 36
+    RCBRACE         shift and go to state 35
+    PLUS            shift and go to state 24
+    RARROW          shift and go to state 25
+    POWER           shift and go to state 26
+    PERCENT         shift and go to state 27
 
-    param_list                     shift and go to state 34
 
 state 29
 
-    (5) expression -> expression PLUS expression .
-    (5) expression -> expression . PLUS expression
-    (6) expression -> expression . RARROW expression
-    (7) expression -> expression . POWER NUMBER
-    (8) expression -> expression . PERCENT NUMBER
+    (29) expression -> LINEAR params .
 
-    SEMICOLON       reduce using rule 5 (expression -> expression PLUS expression .)
-    PLUS            reduce using rule 5 (expression -> expression PLUS expression .)
-    RCBRACE         reduce using rule 5 (expression -> expression PLUS expression .)
-    RARROW          shift and go to state 23
-    POWER           shift and go to state 24
-    PERCENT         shift and go to state 25
-
-  ! RARROW          [ reduce using rule 5 (expression -> expression PLUS expression .) ]
-  ! POWER           [ reduce using rule 5 (expression -> expression PLUS expression .) ]
-  ! PERCENT         [ reduce using rule 5 (expression -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 22 ]
+    SEMICOLON       reduce using rule 29 (expression -> LINEAR params .)
+    PLUS            reduce using rule 29 (expression -> LINEAR params .)
+    RARROW          reduce using rule 29 (expression -> LINEAR params .)
+    POWER           reduce using rule 29 (expression -> LINEAR params .)
+    PERCENT         reduce using rule 29 (expression -> LINEAR params .)
+    RCBRACE         reduce using rule 29 (expression -> LINEAR params .)
 
 
 state 30
 
-    (6) expression -> expression RARROW expression .
-    (5) expression -> expression . PLUS expression
-    (6) expression -> expression . RARROW expression
-    (7) expression -> expression . POWER NUMBER
-    (8) expression -> expression . PERCENT NUMBER
+    (14) params -> LPAREN . param_list RPAREN
+    (15) params -> LPAREN . RPAREN
+    (16) param_list -> . parameter
+    (17) param_list -> . param_list COMMA parameter
+    (18) parameter -> . NUMBER
+    (19) parameter -> . STRING
 
-    SEMICOLON       reduce using rule 6 (expression -> expression RARROW expression .)
-    PLUS            reduce using rule 6 (expression -> expression RARROW expression .)
-    RARROW          reduce using rule 6 (expression -> expression RARROW expression .)
-    RCBRACE         reduce using rule 6 (expression -> expression RARROW expression .)
-    POWER           shift and go to state 24
-    PERCENT         shift and go to state 25
+    RPAREN          shift and go to state 37
+    NUMBER          shift and go to state 39
+    STRING          shift and go to state 40
 
-  ! POWER           [ reduce using rule 6 (expression -> expression RARROW expression .) ]
-  ! PERCENT         [ reduce using rule 6 (expression -> expression RARROW expression .) ]
-  ! PLUS            [ shift and go to state 22 ]
-  ! RARROW          [ shift and go to state 23 ]
-
+    param_list                     shift and go to state 36
+    parameter                      shift and go to state 38
 
 state 31
 
-    (7) expression -> expression POWER NUMBER .
+    (6) expression -> expression PLUS expression .
+    (6) expression -> expression . PLUS expression
+    (7) expression -> expression . RARROW expression
+    (8) expression -> expression . POWER NUMBER
+    (9) expression -> expression . PERCENT NUMBER
 
-    SEMICOLON       reduce using rule 7 (expression -> expression POWER NUMBER .)
-    PLUS            reduce using rule 7 (expression -> expression POWER NUMBER .)
-    RARROW          reduce using rule 7 (expression -> expression POWER NUMBER .)
-    POWER           reduce using rule 7 (expression -> expression POWER NUMBER .)
-    PERCENT         reduce using rule 7 (expression -> expression POWER NUMBER .)
-    RCBRACE         reduce using rule 7 (expression -> expression POWER NUMBER .)
+    SEMICOLON       reduce using rule 6 (expression -> expression PLUS expression .)
+    PLUS            reduce using rule 6 (expression -> expression PLUS expression .)
+    RCBRACE         reduce using rule 6 (expression -> expression PLUS expression .)
+    RARROW          shift and go to state 25
+    POWER           shift and go to state 26
+    PERCENT         shift and go to state 27
+
+  ! RARROW          [ reduce using rule 6 (expression -> expression PLUS expression .) ]
+  ! POWER           [ reduce using rule 6 (expression -> expression PLUS expression .) ]
+  ! PERCENT         [ reduce using rule 6 (expression -> expression PLUS expression .) ]
+  ! PLUS            [ shift and go to state 24 ]
 
 
 state 32
 
-    (8) expression -> expression PERCENT NUMBER .
+    (7) expression -> expression RARROW expression .
+    (6) expression -> expression . PLUS expression
+    (7) expression -> expression . RARROW expression
+    (8) expression -> expression . POWER NUMBER
+    (9) expression -> expression . PERCENT NUMBER
 
-    SEMICOLON       reduce using rule 8 (expression -> expression PERCENT NUMBER .)
-    PLUS            reduce using rule 8 (expression -> expression PERCENT NUMBER .)
-    RARROW          reduce using rule 8 (expression -> expression PERCENT NUMBER .)
-    POWER           reduce using rule 8 (expression -> expression PERCENT NUMBER .)
-    PERCENT         reduce using rule 8 (expression -> expression PERCENT NUMBER .)
-    RCBRACE         reduce using rule 8 (expression -> expression PERCENT NUMBER .)
+    SEMICOLON       reduce using rule 7 (expression -> expression RARROW expression .)
+    PLUS            reduce using rule 7 (expression -> expression RARROW expression .)
+    RARROW          reduce using rule 7 (expression -> expression RARROW expression .)
+    RCBRACE         reduce using rule 7 (expression -> expression RARROW expression .)
+    POWER           shift and go to state 26
+    PERCENT         shift and go to state 27
+
+  ! POWER           [ reduce using rule 7 (expression -> expression RARROW expression .) ]
+  ! PERCENT         [ reduce using rule 7 (expression -> expression RARROW expression .) ]
+  ! PLUS            [ shift and go to state 24 ]
+  ! RARROW          [ shift and go to state 25 ]
 
 
 state 33
 
-    (11) expression -> LCBRACE expression RCBRACE .
+    (8) expression -> expression POWER NUMBER .
 
-    SEMICOLON       reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
-    PLUS            reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
-    RARROW          reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
-    POWER           reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
-    PERCENT         reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
-    RCBRACE         reduce using rule 11 (expression -> LCBRACE expression RCBRACE .)
+    SEMICOLON       reduce using rule 8 (expression -> expression POWER NUMBER .)
+    PLUS            reduce using rule 8 (expression -> expression POWER NUMBER .)
+    RARROW          reduce using rule 8 (expression -> expression POWER NUMBER .)
+    POWER           reduce using rule 8 (expression -> expression POWER NUMBER .)
+    PERCENT         reduce using rule 8 (expression -> expression POWER NUMBER .)
+    RCBRACE         reduce using rule 8 (expression -> expression POWER NUMBER .)
 
 
 state 34
 
-    (12) params -> LPAREN param_list . RPAREN
-    (15) param_list -> param_list . COMMA NUMBER
+    (9) expression -> expression PERCENT NUMBER .
 
-    RPAREN          shift and go to state 37
-    COMMA           shift and go to state 38
+    SEMICOLON       reduce using rule 9 (expression -> expression PERCENT NUMBER .)
+    PLUS            reduce using rule 9 (expression -> expression PERCENT NUMBER .)
+    RARROW          reduce using rule 9 (expression -> expression PERCENT NUMBER .)
+    POWER           reduce using rule 9 (expression -> expression PERCENT NUMBER .)
+    PERCENT         reduce using rule 9 (expression -> expression PERCENT NUMBER .)
+    RCBRACE         reduce using rule 9 (expression -> expression PERCENT NUMBER .)
 
 
 state 35
 
-    (13) params -> LPAREN RPAREN .
+    (10) expression -> LCBRACE expression RCBRACE .
 
-    SEMICOLON       reduce using rule 13 (params -> LPAREN RPAREN .)
-    PLUS            reduce using rule 13 (params -> LPAREN RPAREN .)
-    RARROW          reduce using rule 13 (params -> LPAREN RPAREN .)
-    POWER           reduce using rule 13 (params -> LPAREN RPAREN .)
-    PERCENT         reduce using rule 13 (params -> LPAREN RPAREN .)
-    RCBRACE         reduce using rule 13 (params -> LPAREN RPAREN .)
+    SEMICOLON       reduce using rule 10 (expression -> LCBRACE expression RCBRACE .)
+    PLUS            reduce using rule 10 (expression -> LCBRACE expression RCBRACE .)
+    RARROW          reduce using rule 10 (expression -> LCBRACE expression RCBRACE .)
+    POWER           reduce using rule 10 (expression -> LCBRACE expression RCBRACE .)
+    PERCENT         reduce using rule 10 (expression -> LCBRACE expression RCBRACE .)
+    RCBRACE         reduce using rule 10 (expression -> LCBRACE expression RCBRACE .)
 
 
 state 36
 
-    (14) param_list -> NUMBER .
+    (14) params -> LPAREN param_list . RPAREN
+    (17) param_list -> param_list . COMMA parameter
 
-    RPAREN          reduce using rule 14 (param_list -> NUMBER .)
-    COMMA           reduce using rule 14 (param_list -> NUMBER .)
+    RPAREN          shift and go to state 41
+    COMMA           shift and go to state 42
 
 
 state 37
 
-    (12) params -> LPAREN param_list RPAREN .
+    (15) params -> LPAREN RPAREN .
 
-    SEMICOLON       reduce using rule 12 (params -> LPAREN param_list RPAREN .)
-    PLUS            reduce using rule 12 (params -> LPAREN param_list RPAREN .)
-    RARROW          reduce using rule 12 (params -> LPAREN param_list RPAREN .)
-    POWER           reduce using rule 12 (params -> LPAREN param_list RPAREN .)
-    PERCENT         reduce using rule 12 (params -> LPAREN param_list RPAREN .)
-    RCBRACE         reduce using rule 12 (params -> LPAREN param_list RPAREN .)
+    SEMICOLON       reduce using rule 15 (params -> LPAREN RPAREN .)
+    PLUS            reduce using rule 15 (params -> LPAREN RPAREN .)
+    RARROW          reduce using rule 15 (params -> LPAREN RPAREN .)
+    POWER           reduce using rule 15 (params -> LPAREN RPAREN .)
+    PERCENT         reduce using rule 15 (params -> LPAREN RPAREN .)
+    RCBRACE         reduce using rule 15 (params -> LPAREN RPAREN .)
 
 
 state 38
 
-    (15) param_list -> param_list COMMA . NUMBER
+    (16) param_list -> parameter .
 
-    NUMBER          shift and go to state 39
+    RPAREN          reduce using rule 16 (param_list -> parameter .)
+    COMMA           reduce using rule 16 (param_list -> parameter .)
 
 
 state 39
 
-    (15) param_list -> param_list COMMA NUMBER .
+    (18) parameter -> NUMBER .
 
-    RPAREN          reduce using rule 15 (param_list -> param_list COMMA NUMBER .)
-    COMMA           reduce using rule 15 (param_list -> param_list COMMA NUMBER .)
+    RPAREN          reduce using rule 18 (parameter -> NUMBER .)
+    COMMA           reduce using rule 18 (parameter -> NUMBER .)
+
+
+state 40
+
+    (19) parameter -> STRING .
+
+    RPAREN          reduce using rule 19 (parameter -> STRING .)
+    COMMA           reduce using rule 19 (parameter -> STRING .)
+
+
+state 41
+
+    (14) params -> LPAREN param_list RPAREN .
+
+    SEMICOLON       reduce using rule 14 (params -> LPAREN param_list RPAREN .)
+    PLUS            reduce using rule 14 (params -> LPAREN param_list RPAREN .)
+    RARROW          reduce using rule 14 (params -> LPAREN param_list RPAREN .)
+    POWER           reduce using rule 14 (params -> LPAREN param_list RPAREN .)
+    PERCENT         reduce using rule 14 (params -> LPAREN param_list RPAREN .)
+    RCBRACE         reduce using rule 14 (params -> LPAREN param_list RPAREN .)
+
+
+state 42
+
+    (17) param_list -> param_list COMMA . parameter
+    (18) parameter -> . NUMBER
+    (19) parameter -> . STRING
+
+    NUMBER          shift and go to state 39
+    STRING          shift and go to state 40
+
+    parameter                      shift and go to state 43
+
+state 43
+
+    (17) param_list -> param_list COMMA parameter .
+
+    RPAREN          reduce using rule 17 (param_list -> param_list COMMA parameter .)
+    COMMA           reduce using rule 17 (param_list -> param_list COMMA parameter .)
 

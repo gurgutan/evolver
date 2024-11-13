@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'moduleleftPLUSleftRARROWleftPERCENTrightPOWERCOMMA COMMENT ELU EQUALS FEATURES ID LCBRACE LEAKY_RELU LINEAR LOG_SOFTMAX LPAREN NUMBER PERCENT PLUS POWER RARROW RCBRACE RELU RPAREN SELU SEMICOLON SIGMOID SOFTMAX SOFTPLUS STAR TANH\n        module : COMMENT\n               | definition\n               | module definition\n        definition : ID EQUALS expression SEMICOLON\n        expression : expression PLUS expression\n                   | expression RARROW expression\n                   | expression POWER NUMBER\n                   | expression PERCENT NUMBER\n        expression : FEATURESexpression : IDexpression : LCBRACE expression RCBRACEparams : LPAREN param_list RPARENparams : LPAREN RPARENparam_list : NUMBER\n        | param_list COMMA NUMBER\n        expression : RELU\n                   | SIGMOID\n                   | TANH\n                   | SOFTMAX\n                   | LEAKY_RELU\n                   | ELU\n                   | SELU\n                   | SOFTPLUS\n                   | LOG_SOFTMAX\n        expression : LINEAR params'
+_lr_signature = 'scriptleftPLUSleftRARROWleftPERCENTrightPOWERCOMMA COMMENT ELU EQUALS ID LCBRACE LEAKY_RELU LINEAR LOG_SOFTMAX LPAREN NUMBER PERCENT PLUS POWER RARROW RCBRACE RELU RPAREN SELU SEMICOLON SHAPE SIGMOID SOFTMAX SOFTPLUS STAR STRING TANHscript : assigments\n        assigments : COMMENT\n                   | assigment\n                   | assigments assigment\n        assigment : ID EQUALS expression SEMICOLON\n        expression : expression PLUS expression\n                   | expression RARROW expression\n                   | expression POWER NUMBER\n                   | expression PERCENT NUMBER\n        expression : LCBRACE expression RCBRACEexpression : SHAPEexpression : STRINGexpression : IDparams : LPAREN param_list RPARENparams : LPAREN RPAREN\n        param_list : parameter\n                   | param_list COMMA parameter\n        \n        parameter : NUMBER\n                  | STRING\n        \n        expression : RELU\n                   | SIGMOID\n                   | TANH\n                   | SOFTMAX\n                   | LEAKY_RELU\n                   | ELU\n                   | SELU\n                   | SOFTPLUS\n                   | LOG_SOFTMAX\n        expression : LINEAR params'
     
-_lr_action_items = {'COMMENT':([0,],[2,]),'ID':([0,1,2,3,5,6,10,21,22,23,],[4,4,-1,-2,-3,7,7,-4,7,7,]),'$end':([1,2,3,5,21,],[0,-1,-2,-3,-4,]),'EQUALS':([4,],[6,]),'FEATURES':([6,10,22,23,],[9,9,9,9,]),'LCBRACE':([6,10,22,23,],[10,10,10,10,]),'RELU':([6,10,22,23,],[11,11,11,11,]),'SIGMOID':([6,10,22,23,],[12,12,12,12,]),'TANH':([6,10,22,23,],[13,13,13,13,]),'SOFTMAX':([6,10,22,23,],[14,14,14,14,]),'LEAKY_RELU':([6,10,22,23,],[15,15,15,15,]),'ELU':([6,10,22,23,],[16,16,16,16,]),'SELU':([6,10,22,23,],[17,17,17,17,]),'SOFTPLUS':([6,10,22,23,],[18,18,18,18,]),'LOG_SOFTMAX':([6,10,22,23,],[19,19,19,19,]),'LINEAR':([6,10,22,23,],[20,20,20,20,]),'SEMICOLON':([7,8,9,11,12,13,14,15,16,17,18,19,27,29,30,31,32,33,35,37,],[-10,21,-9,-16,-17,-18,-19,-20,-21,-22,-23,-24,-25,-5,-6,-7,-8,-11,-13,-12,]),'PLUS':([7,8,9,11,12,13,14,15,16,17,18,19,26,27,29,30,31,32,33,35,37,],[-10,22,-9,-16,-17,-18,-19,-20,-21,-22,-23,-24,22,-25,-5,-6,-7,-8,-11,-13,-12,]),'RARROW':([7,8,9,11,12,13,14,15,16,17,18,19,26,27,29,30,31,32,33,35,37,],[-10,23,-9,-16,-17,-18,-19,-20,-21,-22,-23,-24,23,-25,23,-6,-7,-8,-11,-13,-12,]),'POWER':([7,8,9,11,12,13,14,15,16,17,18,19,26,27,29,30,31,32,33,35,37,],[-10,24,-9,-16,-17,-18,-19,-20,-21,-22,-23,-24,24,-25,24,24,-7,-8,-11,-13,-12,]),'PERCENT':([7,8,9,11,12,13,14,15,16,17,18,19,26,27,29,30,31,32,33,35,37,],[-10,25,-9,-16,-17,-18,-19,-20,-21,-22,-23,-24,25,-25,25,25,-7,-8,-11,-13,-12,]),'RCBRACE':([7,9,11,12,13,14,15,16,17,18,19,26,27,29,30,31,32,33,35,37,],[-10,-9,-16,-17,-18,-19,-20,-21,-22,-23,-24,33,-25,-5,-6,-7,-8,-11,-13,-12,]),'LPAREN':([20,],[28,]),'NUMBER':([24,25,28,38,],[31,32,36,39,]),'RPAREN':([28,34,36,39,],[35,37,-14,-15,]),'COMMA':([34,36,39,],[38,-14,-15,]),}
+_lr_action_items = {'COMMENT':([0,],[3,]),'ID':([0,2,3,4,6,7,10,23,24,25,],[5,5,-2,-3,-4,8,8,-5,8,8,]),'$end':([1,2,3,4,6,23,],[0,-1,-2,-3,-4,-5,]),'EQUALS':([5,],[7,]),'LCBRACE':([7,10,24,25,],[10,10,10,10,]),'SHAPE':([7,10,24,25,],[11,11,11,11,]),'STRING':([7,10,24,25,30,42,],[12,12,12,12,40,40,]),'RELU':([7,10,24,25,],[13,13,13,13,]),'SIGMOID':([7,10,24,25,],[14,14,14,14,]),'TANH':([7,10,24,25,],[15,15,15,15,]),'SOFTMAX':([7,10,24,25,],[16,16,16,16,]),'LEAKY_RELU':([7,10,24,25,],[17,17,17,17,]),'ELU':([7,10,24,25,],[18,18,18,18,]),'SELU':([7,10,24,25,],[19,19,19,19,]),'SOFTPLUS':([7,10,24,25,],[20,20,20,20,]),'LOG_SOFTMAX':([7,10,24,25,],[21,21,21,21,]),'LINEAR':([7,10,24,25,],[22,22,22,22,]),'SEMICOLON':([8,9,11,12,13,14,15,16,17,18,19,20,21,29,31,32,33,34,35,37,41,],[-13,23,-11,-12,-20,-21,-22,-23,-24,-25,-26,-27,-28,-29,-6,-7,-8,-9,-10,-15,-14,]),'PLUS':([8,9,11,12,13,14,15,16,17,18,19,20,21,28,29,31,32,33,34,35,37,41,],[-13,24,-11,-12,-20,-21,-22,-23,-24,-25,-26,-27,-28,24,-29,-6,-7,-8,-9,-10,-15,-14,]),'RARROW':([8,9,11,12,13,14,15,16,17,18,19,20,21,28,29,31,32,33,34,35,37,41,],[-13,25,-11,-12,-20,-21,-22,-23,-24,-25,-26,-27,-28,25,-29,25,-7,-8,-9,-10,-15,-14,]),'POWER':([8,9,11,12,13,14,15,16,17,18,19,20,21,28,29,31,32,33,34,35,37,41,],[-13,26,-11,-12,-20,-21,-22,-23,-24,-25,-26,-27,-28,26,-29,26,26,-8,-9,-10,-15,-14,]),'PERCENT':([8,9,11,12,13,14,15,16,17,18,19,20,21,28,29,31,32,33,34,35,37,41,],[-13,27,-11,-12,-20,-21,-22,-23,-24,-25,-26,-27,-28,27,-29,27,27,-8,-9,-10,-15,-14,]),'RCBRACE':([8,11,12,13,14,15,16,17,18,19,20,21,28,29,31,32,33,34,35,37,41,],[-13,-11,-12,-20,-21,-22,-23,-24,-25,-26,-27,-28,35,-29,-6,-7,-8,-9,-10,-15,-14,]),'LPAREN':([22,],[30,]),'NUMBER':([26,27,30,42,],[33,34,39,39,]),'RPAREN':([30,36,38,39,40,43,],[37,41,-16,-18,-19,-17,]),'COMMA':([36,38,39,40,43,],[42,-16,-18,-19,-17,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'module':([0,],[1,]),'definition':([0,1,],[3,5,]),'expression':([6,10,22,23,],[8,26,29,30,]),'params':([20,],[27,]),'param_list':([28,],[34,]),}
+_lr_goto_items = {'script':([0,],[1,]),'assigments':([0,],[2,]),'assigment':([0,2,],[4,6,]),'expression':([7,10,24,25,],[9,28,31,32,]),'params':([22,],[29,]),'param_list':([30,],[36,]),'parameter':([30,42,],[38,43,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,30 +26,34 @@ for _k, _v in _lr_goto_items.items():
        _lr_goto[_x][_k] = _y
 del _lr_goto_items
 _lr_productions = [
-  ("S' -> module","S'",1,None,None,None),
-  ('module -> COMMENT','module',1,'p_module','grammars.py',95),
-  ('module -> definition','module',1,'p_module','grammars.py',96),
-  ('module -> module definition','module',2,'p_module','grammars.py',97),
-  ('definition -> ID EQUALS expression SEMICOLON','definition',4,'p_definition','grammars.py',109),
-  ('expression -> expression PLUS expression','expression',3,'p_expression','grammars.py',117),
-  ('expression -> expression RARROW expression','expression',3,'p_expression','grammars.py',118),
-  ('expression -> expression POWER NUMBER','expression',3,'p_expression','grammars.py',119),
-  ('expression -> expression PERCENT NUMBER','expression',3,'p_expression','grammars.py',120),
-  ('expression -> FEATURES','expression',1,'p_expression_number','grammars.py',132),
-  ('expression -> ID','expression',1,'p_expression_id','grammars.py',142),
-  ('expression -> LCBRACE expression RCBRACE','expression',3,'p_expression_parens','grammars.py',156),
-  ('params -> LPAREN param_list RPAREN','params',3,'p_func_params','grammars.py',161),
-  ('params -> LPAREN RPAREN','params',2,'p_func_params_empty','grammars.py',165),
-  ('param_list -> NUMBER','param_list',1,'p_func_param_list','grammars.py',169),
-  ('param_list -> param_list COMMA NUMBER','param_list',3,'p_func_param_list','grammars.py',170),
-  ('expression -> RELU','expression',1,'p_func_activator','grammars.py',179),
-  ('expression -> SIGMOID','expression',1,'p_func_activator','grammars.py',180),
-  ('expression -> TANH','expression',1,'p_func_activator','grammars.py',181),
-  ('expression -> SOFTMAX','expression',1,'p_func_activator','grammars.py',182),
-  ('expression -> LEAKY_RELU','expression',1,'p_func_activator','grammars.py',183),
-  ('expression -> ELU','expression',1,'p_func_activator','grammars.py',184),
-  ('expression -> SELU','expression',1,'p_func_activator','grammars.py',185),
-  ('expression -> SOFTPLUS','expression',1,'p_func_activator','grammars.py',186),
-  ('expression -> LOG_SOFTMAX','expression',1,'p_func_activator','grammars.py',187),
-  ('expression -> LINEAR params','expression',2,'p_func_linear','grammars.py',195),
+  ("S' -> script","S'",1,None,None,None),
+  ('script -> assigments','script',1,'p_script','grammars.py',110),
+  ('assigments -> COMMENT','assigments',1,'p_assigments','grammars.py',116),
+  ('assigments -> assigment','assigments',1,'p_assigments','grammars.py',117),
+  ('assigments -> assigments assigment','assigments',2,'p_assigments','grammars.py',118),
+  ('assigment -> ID EQUALS expression SEMICOLON','assigment',4,'p_assigment','grammars.py',128),
+  ('expression -> expression PLUS expression','expression',3,'p_expression','grammars.py',136),
+  ('expression -> expression RARROW expression','expression',3,'p_expression','grammars.py',137),
+  ('expression -> expression POWER NUMBER','expression',3,'p_expression','grammars.py',138),
+  ('expression -> expression PERCENT NUMBER','expression',3,'p_expression','grammars.py',139),
+  ('expression -> LCBRACE expression RCBRACE','expression',3,'p_expression_braces','grammars.py',151),
+  ('expression -> SHAPE','expression',1,'p_expression_shape','grammars.py',155),
+  ('expression -> STRING','expression',1,'p_expression_string','grammars.py',165),
+  ('expression -> ID','expression',1,'p_expression_id','grammars.py',169),
+  ('params -> LPAREN param_list RPAREN','params',3,'p_func_params','grammars.py',178),
+  ('params -> LPAREN RPAREN','params',2,'p_func_params_empty','grammars.py',182),
+  ('param_list -> parameter','param_list',1,'p_func_param_list','grammars.py',187),
+  ('param_list -> param_list COMMA parameter','param_list',3,'p_func_param_list','grammars.py',188),
+  ('parameter -> NUMBER','parameter',1,'p_func_parameter','grammars.py',197),
+  ('parameter -> STRING','parameter',1,'p_func_parameter','grammars.py',198),
+  ('expression -> RELU','expression',1,'p_func_activator','grammars.py',209),
+  ('expression -> SIGMOID','expression',1,'p_func_activator','grammars.py',210),
+  ('expression -> TANH','expression',1,'p_func_activator','grammars.py',211),
+  ('expression -> SOFTMAX','expression',1,'p_func_activator','grammars.py',212),
+  ('expression -> LEAKY_RELU','expression',1,'p_func_activator','grammars.py',213),
+  ('expression -> ELU','expression',1,'p_func_activator','grammars.py',214),
+  ('expression -> SELU','expression',1,'p_func_activator','grammars.py',215),
+  ('expression -> SOFTPLUS','expression',1,'p_func_activator','grammars.py',216),
+  ('expression -> LOG_SOFTMAX','expression',1,'p_func_activator','grammars.py',217),
+  ('expression -> LINEAR params','expression',2,'p_func_linear','grammars.py',225),
 ]
