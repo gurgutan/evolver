@@ -380,6 +380,7 @@ state 21
     PERCENT         reduce using rule 28 (expression -> LOG_SOFTMAX .)
     RCBRACE         reduce using rule 28 (expression -> LOG_SOFTMAX .)
 
+    params                         shift and go to state 28
 
 state 22
 
