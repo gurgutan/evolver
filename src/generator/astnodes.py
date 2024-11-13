@@ -99,8 +99,22 @@ class ScriptNode(ASTNode):
         """Сериализует узел скрипта в словарь."""
         return {
             "type": "script",
-            "name": self.name,
-            "modules": {m.name: m.value.serialize() for m in self.assigments.values()},
+            "modules": {m.name: m.serialize() for m in self.assigments},
+        }
+
+
+class StringNode(ASTNode):
+    """Узел строки."""
+
+    def __init__(self, value: str):
+        super().__init__()
+        self.value = value
+
+    def serialize(self) -> dict:
+        """Сериализует узел строки в словарь."""
+        return {
+            "type": "string",
+            "value": self.value,
         }
 
 

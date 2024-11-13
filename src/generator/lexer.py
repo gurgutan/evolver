@@ -70,6 +70,7 @@ class Tokenizer:
         "POWER",
         "SEMICOLON",
         "COMMENT",
+        "STRING",
     ] + list(reserved_ids.values())
 
     t_COMMA = r"\,"
@@ -103,6 +104,11 @@ class Tokenizer:
     def t_ID(self, t):
         r"[a-zA-Z_][a-zA-Z0-9_]*"
         t.type = self.reserved_ids.get(t.value, "ID")
+        return t
+
+    def t_STRING(self, t):
+        r"\"([^\\\n]|(\\.))*?\" "
+        t.value = t.value[1:-1]  # Убираем кавычки с начала и конца строки
         return t
 
     # def t_FUNCID(self, t):

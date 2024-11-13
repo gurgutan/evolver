@@ -4,7 +4,7 @@
 # Парсер
 # Содержит определение класса Parser
 # Слеповичев И.И. 20.06.2023
-# Грамматика выражений:
+# Грамматика выражений для создания нейросетевых моделей:
 #   script     -> assigments
 #   assigments -> COMMENT | assigment | assigments assigment
 #   assigment  -> ID EQUALS expression SEMICOLON
@@ -15,9 +15,9 @@
 #   expression -> expression POWER NUMBER
 #   expression -> expression PERCENT NUMBER
 #   expression -> LCBRACE expression RCBRACE
-#   params     -> LPAREN param_list RPAREN
-#   params     -> LPAREN RPAREN
-#   param_list -> NUMBER | param_list COMMA NUMBER
+#   params     -> LPAREN param_list RPAREN | LPAREN RPAREN
+#   param_list -> parameter | param_list COMMA parameter
+#   parameter  -> NUMBER | STRING
 #   expression -> RELU
 #   expression -> SIGMOID
 #   expression -> TANH
@@ -28,10 +28,9 @@
 #   expression -> SELU
 #   expression -> LOG_SOFTMAX
 #
-#
 # Токены
 #   ID - идентификатор: r'[a-zA-Z_][a-zA-Z0-9_]*' ранее определнного блока, либо перечня torch.nn.functional
-#   FEATURES - линейный модуль с n выходными нейронами: r'\@\d+'
+#   SHAPE - линейный модуль с n выходными нейронами: r'\@\d+'
 #   NUMBER - число: r'\d+'
 #   SEMICOLON - точка с запятой
 #   EQUALS - операция присвоения результата выражения переменной: r'='
@@ -51,7 +50,7 @@
 #   SELU - функция SELU
 #   LOG_SOFTMAX - функция LogSoftmax
 #   PLUS - операция сложения: r'\+'
-#   MUL - операция умножения: r'\-\>'
+#   RARROW - операция соединения модулей в композицию: r'\-\>'
 #   PERCENT - операция деления: r'\%'
 #   COMMENT - комментарий: r'\#.*'
 #
@@ -62,6 +61,7 @@
 #   Копирование модуля x и последующая композиция этих n копий: x ^ n
 #   Копирование модуля x и параллельное соединение n копий : x % n
 #   Группировка фигурными скобками: { @4 + @4 }
+#   Функция активации RELU: relu
 #
 # Примеры выражений:
 #   x = @64;        # x - torch.nn.Linear 64 нейрона
@@ -83,6 +83,7 @@ from generator.astnodes import (
     NumberNode,
     AssigmentNode,
     ScriptNode,
+    StringNode,
 )
 
 
@@ -137,13 +138,13 @@ class AnnetParser:
                    | expression POWER NUMBER
                    | expression PERCENT NUMBER
         """
-        if re.fullmatch(Tokenizer.t_PLUS, p[2]):
+        if p.slice[2].type == "PLUS":
             p[0] = OperationNode(p[1], p[3], "plus")
-        elif re.fullmatch(Tokenizer.t_RARROW, p[2]):
+        elif p.slice[2].type == "RARROW":
             p[0] = OperationNode(p[1], p[3], "arrow")
-        elif re.fullmatch(Tokenizer.t_POWER, p[2]):
+        elif p.slice[2].type == "POWER":
             p[0] = OperationNode(p[1], NumberNode(int(p[3])), "power")
-        elif re.fullmatch(Tokenizer.t_PERCENT, p[2]):
+        elif p.slice[2].type == "PERCENT":
             p[0] = OperationNode(p[1], NumberNode(int(p[3])), "percent")
 
     def p_expression_braces(self, p):
@@ -159,6 +160,10 @@ class AnnetParser:
             p[0] = ModuleNode("Linear", [n])
         except Exception as e:
             self.notify(p, f"Error Linear module creation: {str(e)}")
+
+    def p_expression_string(self, p):
+        "expression : STRING"
+        p[0] = StringNode(value=p[1])
 
     def p_expression_id(self, p):
         """expression : ID"""
@@ -179,13 +184,25 @@ class AnnetParser:
 
     def p_func_param_list(self, p):
         """
-        param_list : NUMBER
-                   | param_list COMMA NUMBER
+        param_list : parameter
+                   | param_list COMMA parameter
         """
         if len(p) == 2:
-            p[0] = [int(p[1])]
+            p[0] = [p[1]]
         else:
-            p[0] = p[1] + [int(p[3])]
+            p[0] = p[1] + [p[3]]
+
+    def p_func_parameter(self, p):
+        """
+        parameter : NUMBER
+                  | STRING
+        """
+        if p.slice[1].type == "NUMBER":
+            p[0] = int(p[1])
+        elif p.slice[1].type == "STRING":
+            p[0] = p[1]
+        else:
+            self.notify(p, f"Error in parameter: {p[1]}")
 
     def p_func_activator(self, p):
         """
